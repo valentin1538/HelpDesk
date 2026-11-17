@@ -31,6 +31,16 @@ npm install
 npm run dev
 ```
 
+### Base de données — MongoDB Atlas
+
+Le projet utilise un cluster Atlas **M0 (gratuit)** partagé par l'équipe.
+
+1. Demander l'accès au projet Atlas « HelpDesk » (Access Manager) et le mot de passe de l'utilisateur `helpdesk_app` (en privé, jamais via Git).
+2. Ajouter son adresse IP dans *Network Access*.
+3. Copier `server/.env.example` en `server/.env` et renseigner `MONGO_URI` (avec `/helpdesk` avant le `?`).
+
+**Dépannage — `querySrv ECONNREFUSED`** : le DNS local (VPN, antivirus, DNS du navigateur…) ne résout pas les enregistrements SRV utilisés par `mongodb+srv://`. Ajouter `DNS_SERVERS=1.1.1.1,8.8.8.8` dans `server/.env`.
+
 ## Comptes de démo
 
 _À compléter après le seed._
