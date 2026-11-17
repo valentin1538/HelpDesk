@@ -4,10 +4,10 @@
 
 ## Équipe
 
-| Membre | Rôle projet | Domaine technique principal |
-|--------|-------------|-----------------------------|
+| Membre       | Rôle projet                                                           | Domaine technique principal                               |
+| ------------ | --------------------------------------------------------------------- | --------------------------------------------------------- |
 | **Valentin** | Chef de projet (animation des rituels, Kanban, livrables, rapport IA) | Backend : API Express, modèle Mongoose, serveur Socket.io |
-| **Edoardo** | Développeur | Frontend : React, client Socket.io, dashboard statistique |
+| **Edoardo**  | Développeur                                                           | Frontend : React, client Socket.io, dashboard statistique |
 
 Les deux pistes avancent **en parallèle** chaque jour : le front se développe contre le contrat d'API défini dans le [dossier technique](02-dossier-technique.md#4-api-rest) (données simulées tant que la route n'est pas prête), puis s'intègre à l'API réelle dès qu'elle est mergée.
 
@@ -15,11 +15,11 @@ Les deux pistes avancent **en parallèle** chaque jour : le front se développe 
 
 ## Rituels (format journée)
 
-| Moment | Rituel | Durée | Animé par |
-|--------|--------|-------|-----------|
-| Début de journée | Sprint planning : choix des US du jour, assignation dans le Kanban | 15 min | Valentin |
-| Midi | Point d'avancement, déblocage, synchro des contrats API | 10 min | Valentin |
-| Fin de journée | Démo croisée (chacun montre sa piste) + rétro (+ / − / à changer) + mise à jour du backlog et du rapport IA | 20 min | Valentin |
+| Moment           | Rituel                                                                                                      | Durée  | Animé par |
+| ---------------- | ----------------------------------------------------------------------------------------------------------- | ------ | --------- |
+| Début de journée | Sprint planning : choix des US du jour, assignation dans le Kanban                                          | 15 min | Valentin  |
+| Midi             | Point d'avancement, déblocage, synchro des contrats API                                                     | 10 min | Valentin  |
+| Fin de journée   | Démo croisée (chacun montre sa piste) + rétro (+ / − / à changer) + mise à jour du backlog et du rapport IA | 20 min | Valentin  |
 
 Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do · In progress · Review · Done`.
 
@@ -44,18 +44,18 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 
 **Objectif :** savoir exactement quoi construire et comment.
 
-| Tâche | Qui | État |
-|-------|-----|------|
-| Analyse du besoin, parties prenantes, personas | Valentin | ✅ |
-| Fonctionnalités + backlog MoSCoW en user stories, règles de gestion | Valentin | ✅ |
-| Architecture, modèle de données, contrat d'API, événements Socket.io | Valentin | ✅ |
-| Dépôt Git (`main` + `develop`), `.gitignore`, README | Valentin | ✅ |
-| Kanban GitHub Projects avec les 20 US (#1 → #20) | Valentin | ✅ |
-| Démarrer le rapport d'utilisation de l'IA | Valentin | ✅ |
-| Donner l'accès au Kanban à Edoardo | Valentin | ⬜ |
-| Maquettes basse fidélité (Excalidraw/Figma) : login, mes tickets, nouveau ticket, détail ticket, file technicien, dashboard → `docs/maquettes/` | Edoardo | ⬜ |
-| Relecture croisée du cadrage et du dossier technique | Les deux | ⬜ |
-| Préparer l'environnement : Node ≥ 20, MongoDB (local ou Atlas partagé) | Les deux | ⬜ |
+| Tâche                                                                                                                                           | Qui      | État |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---- |
+| Analyse du besoin, parties prenantes, personas                                                                                                  | Valentin | ✅   |
+| Fonctionnalités + backlog MoSCoW en user stories, règles de gestion                                                                             | Valentin | ✅   |
+| Architecture, modèle de données, contrat d'API, événements Socket.io                                                                            | Valentin | ✅   |
+| Dépôt Git (`main` + `develop`), `.gitignore`, README                                                                                            | Valentin | ✅   |
+| Kanban GitHub Projects avec les 20 US (#1 → #20)                                                                                                | Valentin | ✅   |
+| Démarrer le rapport d'utilisation de l'IA                                                                                                       | Valentin | ✅   |
+| Donner l'accès au Kanban à Edoardo                                                                                                              | Valentin | ✅   |
+| Maquettes basse fidélité (Excalidraw/Figma) : login, mes tickets, nouveau ticket, détail ticket, file technicien, dashboard → `docs/maquettes/` | Edoardo  | ⬜   |
+| Relecture croisée du cadrage et du dossier technique                                                                                            | Les deux | ✅   |
+| Préparer l'environnement : Node ≥ 20, MongoDB (local ou Atlas partagé)                                                                          | Les deux | ⬜   |
 
 **Livrable :** dossier de cadrage v1, dossier technique v0, maquettes.
 
@@ -63,13 +63,13 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 
 **Objectif :** API d'authentification et de tickets fonctionnelle ; front initialisé avec authentification.
 
-| Valentin — `server/` | Edoardo — `client/` |
-|----------------------|---------------------|
-| Init Express, connexion Mongoose, structure en couches, gestion d'erreurs centralisée | Init Vite + React Router, layout, navigation |
-| Modèles `User`, `Ticket`, `Comment`, `Notification`, `Counter` | Client axios (intercepteur JWT) + `AuthContext` |
-| US01 auth (register/login/me) + US09 middlewares `auth` / `requireRole` | US01 pages Login / Register, US09 routes protégées par rôle |
-| US02 création ticket, US05 statut/assignation (RG2–RG5), US06 commentaires | US02 formulaire Nouveau ticket |
-| Script de seed (comptes de démo + tickets), collection Postman | |
+| Valentin — `server/`                                                                  | Edoardo — `client/`                                         |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Init Express, connexion Mongoose, structure en couches, gestion d'erreurs centralisée | Init Vite + React Router, layout, navigation                |
+| Modèles `User`, `Ticket`, `Comment`, `Notification`, `Counter`                        | Client axios (intercepteur JWT) + `AuthContext`             |
+| US01 auth (register/login/me) + US09 middlewares `auth` / `requireRole`               | US01 pages Login / Register, US09 routes protégées par rôle |
+| US02 création ticket, US05 statut/assignation (RG2–RG5), US06 commentaires            | US02 formulaire Nouveau ticket                              |
+| Script de seed (comptes de démo + tickets), collection Postman                        |                                                             |
 
 **Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel.
 
@@ -77,34 +77,34 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 
 **Objectif :** parcours utilisateur, technicien et admin complets dans le navigateur.
 
-| Valentin — `server/` | Edoardo — `client/` |
-|----------------------|---------------------|
-| US04 filtres / tri / pagination sur `GET /tickets` | US03 Mes tickets, US04 file technicien avec filtres |
+| Valentin — `server/`                                       | Edoardo — `client/`                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| US04 filtres / tri / pagination sur `GET /tickets`         | US03 Mes tickets, US04 file technicien avec filtres                                   |
 | US11 assignation admin, US13 notes internes (filtrage RG6) | Page Détail ticket : fil de commentaires (US06), US13 notes internes, US12 historique |
-| US14 routes `GET/PATCH /users` | US11 sélecteur d'assignation, US14 page gestion des utilisateurs |
-| Mise à jour de la doc API | Actions de statut dans le détail (US05) |
+| US14 routes `GET/PATCH /users`                             | US11 sélecteur d'assignation, US14 page gestion des utilisateurs                      |
+| Mise à jour de la doc API                                  | Actions de statut dans le détail (US05)                                               |
 
 ## Sprint 4 — Temps réel & statistiques
 
 **Objectif :** la valeur ajoutée « différenciante ».
 
-| Valentin — `server/` | Edoardo — `client/` |
-|----------------------|---------------------|
+| Valentin — `server/`                                                                  | Edoardo — `client/`                                                    |
+| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
 | Serveur Socket.io, auth JWT au handshake, rooms (`user:<id>`, `ticket:<id>`, `staff`) | `SocketContext` (connexion avec le token), join/leave des rooms ticket |
-| Émission `ticket:created`, `ticket:updated`, `comment:created`, `notification:new` | US07 mise à jour live du détail ticket, US08 toast + file live |
-| US15 modèle + routes notifications | US15 centre de notifications (badge non lues) |
-| US10 endpoints `/stats/*` (Aggregation Pipeline) | US10 dashboard (Recharts) |
-| COULD si avance : US18 SLA | COULD si avance : US16 « en train d'écrire » |
+| Émission `ticket:created`, `ticket:updated`, `comment:created`, `notification:new`    | US07 mise à jour live du détail ticket, US08 toast + file live         |
+| US15 modèle + routes notifications                                                    | US15 centre de notifications (badge non lues)                          |
+| US10 endpoints `/stats/*` (Aggregation Pipeline)                                      | US10 dashboard (Recharts)                                              |
+| COULD si avance : US18 SLA                                                            | COULD si avance : US16 « en train d'écrire »                           |
 
 ## Sprint 5 — Qualité, docs & soutenance
 
 **Objectif :** livrer et savoir défendre.
 
-| Valentin | Edoardo |
-|----------|---------|
+| Valentin                                                          | Edoardo                                          |
+| ----------------------------------------------------------------- | ------------------------------------------------ |
 | Finaliser dossier technique (doc API, réflexion montée en charge) | Correctifs UI, responsive, états vides / erreurs |
-| Rapport IA (analyse critique), README d'installation | Test de bout en bout du scénario de démo |
-| Pilotage de la répétition de soutenance | Données de démo réalistes (seed) avec Valentin |
+| Rapport IA (analyse critique), README d'installation              | Test de bout en bout du scénario de démo         |
+| Pilotage de la répétition de soutenance                           | Données de démo réalistes (seed) avec Valentin   |
 
 **Ensemble :** répétition de la démo de 10 min + session de questions croisées. Valentin interroge Edoardo sur le back, Edoardo interroge Valentin sur le front.
 
