@@ -67,16 +67,181 @@ helpdesk/
 
 ## 3. Modèle de données
 
-### 3.1 Embarquer ou référencer ?
+### 3.1 Démarche
 
-| Donnée | Choix | Raison |
-|--------|-------|--------|
-| Historique du ticket | **Embarqué** dans `Ticket.history` | Toujours lu avec le ticket, volume borné (quelques dizaines d'entrées) |
-| Commentaires | **Collection séparée** `comments` | Volume non borné (limite 16 Mo/doc), pagination, filtrage des notes internes |
-| Auteur / assigné | **Référence** (`ObjectId` → `users`) + `populate` | Le nom/rôle peut changer, une seule source |
-| Notifications | **Collection séparée** | Requêtées par utilisateur, marquées lues indépendamment |
+Nous avons conçu les données en trois étapes :
 
-### 3.2 Schémas
+1. **MCD (Merise)** : modéliser le domaine métier indépendamment de toute technologie : quelles entités, quelles associations, quelles cardinalités.
+2. **MLD relationnel normalisé (3FN)** : la traduction « classique » en tables, qui sert de référence.
+3. **Modèle document dénormalisé (MongoDB)** : transformation guidée par les **cas d'usage** de l'application, avec une justification pour chaque table supprimée, fusionnée ou conservée.
+
+Cette démarche permet de montrer que la structure MongoDB est un **choix raisonné** à partir d'un modèle complet, et non une absence de modélisation.
+
+### 3.2 MCD — Modèle conceptuel de données
+
+```mermaid
+erDiagram
+    ROLE ||--o{ UTILISATEUR : "possède"
+    SERVICE ||--o{ UTILISATEUR : "appartient à"
+    UTILISATEUR ||--o{ TICKET : "crée"
+    UTILISATEUR |o--o{ TICKET : "est assigné à"
+    CATEGORIE ||--o{ TICKET : "classe"
+    PRIORITE ||--o{ TICKET : "qualifie"
+    STATUT ||--o{ TICKET : "décrit l'état de"
+    TICKET ||--o{ COMMENTAIRE : "contient"
+    UTILISATEUR ||--o{ COMMENTAIRE : "rédige"
+    TICKET ||--o{ ACTION_HISTORIQUE : "trace"
+    UTILISATEUR ||--o{ ACTION_HISTORIQUE : "effectue"
+    UTILISATEUR ||--o{ NOTIFICATION : "reçoit"
+    TICKET ||--o{ NOTIFICATION : "concerne"
+```
+
+**Entités et propriétés**
+
+| Entité | Propriétés |
+|--------|-----------|
+| UTILISATEUR | id, prénom, nom, email, mot de passe, actif, date de création |
+| ROLE | id, libellé (utilisateur, technicien, administrateur) |
+| SERVICE | id, nom (Comptabilité, RH…) |
+| TICKET | id, numéro, titre, description, date de création, date de 1ʳᵉ prise en charge, date de résolution, date de clôture |
+| CATEGORIE | id, libellé (matériel, logiciel, réseau, accès, autre) |
+| PRIORITE | id, libellé, rang (basse 1 → critique 4) |
+| STATUT | id, libellé (ouvert, en cours, en attente utilisateur, résolu, fermé) |
+| COMMENTAIRE | id, contenu, interne (oui/non), date |
+| ACTION_HISTORIQUE | id, type d'action, ancienne valeur, nouvelle valeur, date |
+| NOTIFICATION | id, type, message, lue (oui/non), date |
+
+**Associations et cardinalités (notation Merise)**
+
+| Association | Côté A | Côté B | Lecture |
+|-------------|--------|--------|---------|
+| Posséder | UTILISATEUR (1,1) | ROLE (0,n) | Un utilisateur a exactement un rôle ; un rôle est porté par 0 à n utilisateurs |
+| Appartenir | UTILISATEUR (0,1) | SERVICE (0,n) | Un utilisateur appartient au plus à un service |
+| Créer | TICKET (1,1) | UTILISATEUR (0,n) | Un ticket a un seul demandeur ; un utilisateur crée 0 à n tickets |
+| Être assigné | TICKET (0,1) | UTILISATEUR (0,n) | Un ticket est assigné à au plus un technicien |
+| Classer / Qualifier / Décrire | TICKET (1,1) | CATEGORIE / PRIORITE / STATUT (0,n) | Un ticket a une seule catégorie, priorité et un seul statut à un instant donné |
+| Contenir | COMMENTAIRE (1,1) | TICKET (0,n) | Un commentaire appartient à un seul ticket |
+| Rédiger | COMMENTAIRE (1,1) | UTILISATEUR (0,n) | Un commentaire a un seul auteur |
+| Tracer | ACTION_HISTORIQUE (1,1) | TICKET (1,n) | Toute action appartient à un ticket ; un ticket a au moins l'action « création » |
+| Effectuer | ACTION_HISTORIQUE (1,1) | UTILISATEUR (0,n) | Une action est faite par un utilisateur |
+| Recevoir | NOTIFICATION (1,1) | UTILISATEUR (0,n) | Une notification a un seul destinataire |
+| Concerner | NOTIFICATION (1,1) | TICKET (0,n) | Une notification porte sur un ticket |
+
+### 3.3 MLD relationnel normalisé (référence)
+
+Traduction directe du MCD en 3ᵉ forme normale (<u>clé primaire</u>, #clé étrangère) :
+
+- **role** (<u>id</u>, libelle)
+- **service** (<u>id</u>, nom)
+- **utilisateur** (<u>id</u>, prenom, nom, email, mot_de_passe, actif, cree_le, #role_id, #service_id)
+- **categorie** (<u>id</u>, libelle)
+- **priorite** (<u>id</u>, libelle, rang)
+- **statut** (<u>id</u>, libelle)
+- **ticket** (<u>id</u>, numero, titre, description, cree_le, pris_en_charge_le, resolu_le, ferme_le, #createur_id, #assigne_id, #categorie_id, #priorite_id, #statut_id)
+- **commentaire** (<u>id</u>, contenu, interne, cree_le, #ticket_id, #auteur_id)
+- **action_historique** (<u>id</u>, type, ancienne_valeur, nouvelle_valeur, effectue_le, #ticket_id, #utilisateur_id)
+- **notification** (<u>id</u>, type, message, lue, cree_le, #destinataire_id, #ticket_id)
+
+**10 tables.** Ce modèle est correct et sans redondance, mais il est mal adapté à nos usages. Par exemple, afficher **la page « Détail ticket »** demande de joindre `ticket` + `utilisateur` (créateur) + `utilisateur` (assigné) + `categorie` + `priorite` + `statut` + `action_historique` + `utilisateur` (auteur de chaque action) + `commentaire` + `utilisateur` (auteur de chaque commentaire), soit **une dizaine de jointures** pour l'écran le plus consulté de l'application.
+
+### 3.4 Pourquoi un schéma dénormalisé en NoSQL ?
+
+En relationnel, on modélise **les entités** puis on reconstitue les vues par jointures. En MongoDB, on modélise **selon les accès** : *ce qui est lu ensemble est stocké ensemble*.
+
+| Raison | Explication |
+|--------|-------------|
+| **Pas de jointure native** | MongoDB n'a pas de `JOIN` ; `$lookup` (ou `populate` de Mongoose) existe mais coûte des requêtes supplémentaires. Moins on en a besoin, plus les lectures sont rapides. |
+| **Atomicité au niveau du document** | Une écriture sur un seul document est atomique. Si le statut et son entrée d'historique sont dans le même document, ils sont mis à jour **ensemble ou pas du tout**, sans transaction multi-documents. |
+| **Application très majoritairement en lecture** | Une file de tickets est consultée bien plus souvent qu'elle n'est modifiée : on optimise la lecture, quitte à un peu plus de travail à l'écriture. |
+| **Montée en charge horizontale** | Avec le sharding, des données réparties sur plusieurs serveurs rendent les jointures très coûteuses. Des documents autonomes se répartissent sans difficulté. |
+| **Cohérence avec la pile JavaScript** | Un document correspond directement à l'objet manipulé par l'API et par React. |
+
+**Règles de décision appliquées**
+
+| Situation | Choix | Exemple |
+|-----------|-------|---------|
+| Données de référence **fixes**, sans attribut propre, dont le comportement est codé dans l'application | **Valeur énumérée** (enum) dans le document | rôle, catégorie, statut, priorité |
+| Relation 1-n **bornée**, données **toujours lues avec le parent**, n'existant pas sans lui | **Imbriquer** (sous-document / tableau) | historique d'un ticket |
+| Relation 1-n **non bornée**, ou données **interrogées seules**, ou **cycle de vie propre** | **Collection séparée + référence** | commentaires, notifications |
+| Entité **partagée** et **modifiable** (référencée depuis de nombreux documents) | **Référence** (`ObjectId`) | utilisateurs |
+
+### 3.5 Décisions table par table
+
+| Table du MLD | Décision | Justification |
+|--------------|----------|---------------|
+| **role** | ❌ **Supprimée** → `users.role` (enum `user` / `technician` / `admin`) | 3 valeurs fixes, sans attribut. Les droits associés sont **codés dans l'application** (middleware `requireRole`) : ajouter un rôle en base sans modifier le code n'aurait aucun effet. Le rôle est lu à **chaque requête** (contrôle d'accès) et transporté dans le JWT : une jointure ici serait coûteuse et inutile. |
+| **service** | ❌ **Supprimée** → `users.department` (chaîne) | Simple libellé, sans attribut ni règle métier. Il sert à l'affichage et au regroupement statistique (`$group` sur une chaîne fonctionne directement). Si l'entreprise voulait gérer ses services (responsable, site…), on recréerait une collection. |
+| **categorie** | ❌ **Supprimée** → `tickets.category` (enum) | Liste courte et stable. Une catégorie n'a pas d'autre propriété que son libellé. La validation est faite par Mongoose (`enum`). **Compromis assumé** : ajouter une catégorie nécessite un déploiement. Si un administrateur devait gérer les catégories lui-même (évolution possible), on la rétablirait en collection. |
+| **priorite** | ❌ **Supprimée** → `tickets.priority` (enum) + `tickets.priorityRank` (1 à 4) | Valeurs fixes. Le **rang** est **dénormalisé** dans le ticket : trier sur le libellé donnerait un ordre alphabétique faux (`critical` < `high` < `low` < `medium`). Stocker le rang permet de trier la file technicien par urgence avec un index. |
+| **statut** | ❌ **Supprimée** → `tickets.status` (enum) | Les statuts portent de la **logique** (transitions autorisées, règle RG3) qui vit dans le code. Une table n'apporterait rien et ne garantirait pas les transitions. |
+| **action_historique** | 🔀 **Imbriquée** → `tickets.history[]` | Relation 1-n **bornée** (quelques dizaines d'actions au maximum), **toujours affichée avec le ticket**, sans existence propre. L'imbrication permet de mettre à jour le statut **et** d'ajouter l'entrée d'historique dans **une seule écriture atomique** (règle RG5). |
+| **utilisateur** | ✅ **Conservée** → collection `users`, **référencée** | Entité centrale, partagée par les tickets, commentaires, notifications et historique. Ses données (nom, rôle, état actif) **changent** : les recopier dans chaque document obligerait à les mettre à jour partout. On garde une seule source et on utilise `populate` sur les champs affichés. |
+| **ticket** | ✅ **Conservée** → collection `tickets` | Document central de l'application, enrichi des enums et de l'historique. |
+| **commentaire** | ✅ **Conservée** → collection `comments` | Relation 1-n **non bornée** : imbriquer les commentaires ferait grossir le ticket sans limite (plafond de **16 Mo** par document) et réécrire tout le ticket à chaque message. La collection séparée permet la **pagination**, le **filtrage des notes internes** pour un utilisateur (RG6) et l'insertion légère en temps réel. Elle se prête aussi au sharding par ticket. |
+| **notification** | ✅ **Conservée** → collection `notifications` | **Cycle de vie indépendant** : interrogées **par destinataire** (et non par ticket), marquées lues une par une, et purgeables automatiquement (index TTL possible). Les imbriquer dans `users` ou `tickets` compliquerait toutes ces opérations. |
+| — | ➕ **Ajoutée** → collection `counters` | Besoin technique sans équivalent dans le MCD : MongoDB n'a pas d'auto-incrément. Un compteur incrémenté atomiquement (`findOneAndUpdate` + `$inc`) génère le numéro lisible `HD-0042`. |
+
+**Bilan : 10 tables → 5 collections** (`users`, `tickets`, `comments`, `notifications`, `counters`).
+
+**Champs dérivés stockés (dénormalisation de calcul)** : `firstResponseAt`, `resolvedAt` et `closedAt` pourraient être retrouvés en parcourant l'historique. Ils sont stockés directement dans le ticket pour que les statistiques (délai de prise en charge, délai de résolution) soient de simples calculs dans l'Aggregation Pipeline, et puissent être indexés.
+
+### 3.6 Schéma dénormalisé (modèle document)
+
+```mermaid
+erDiagram
+    USERS ||--o{ TICKETS : "createdBy"
+    USERS |o--o{ TICKETS : "assignedTo"
+    TICKETS ||--o{ COMMENTS : "ticket"
+    USERS ||--o{ COMMENTS : "author"
+    USERS ||--o{ NOTIFICATIONS : "recipient"
+    TICKETS ||--o{ NOTIFICATIONS : "ticket"
+
+    USERS {
+        ObjectId _id
+        string firstName
+        string lastName
+        string email "unique"
+        string password "hash bcrypt"
+        string role "enum - ex table ROLE"
+        string department "ex table SERVICE"
+        boolean isActive
+    }
+    TICKETS {
+        ObjectId _id
+        number number "unique, via counters"
+        string title
+        string description
+        string category "enum - ex table CATEGORIE"
+        string priority "enum - ex table PRIORITE"
+        number priorityRank "dénormalisé pour le tri"
+        string status "enum - ex table STATUT"
+        ObjectId createdBy
+        ObjectId assignedTo
+        array history "imbriqué - ex table ACTION_HISTORIQUE"
+        date firstResponseAt "dérivé"
+        date resolvedAt "dérivé"
+        date closedAt "dérivé"
+    }
+    COMMENTS {
+        ObjectId _id
+        ObjectId ticket
+        ObjectId author
+        string content
+        boolean isInternal
+    }
+    NOTIFICATIONS {
+        ObjectId _id
+        ObjectId recipient
+        ObjectId ticket
+        string type
+        string message
+        boolean read
+    }
+    COUNTERS {
+        string _id "ticket"
+        number seq
+    }
+```
 
 **users**
 ```js
@@ -86,9 +251,9 @@ helpdesk/
   lastName: String,         // requis
   email: String,            // requis, unique, lowercase
   password: String,         // hash bcrypt, select: false
-  role: 'user' | 'technician' | 'admin',   // défaut 'user'
-  department: String,       // ex. Comptabilité
-  isActive: Boolean,        // défaut true
+  role: 'user' | 'technician' | 'admin',   // défaut 'user' (ex-table ROLE)
+  department: String,       // ex. Comptabilité (ex-table SERVICE)
+  isActive: Boolean,        // défaut true — on désactive plutôt que supprimer
   createdAt, updatedAt
 }
 ```
@@ -100,12 +265,13 @@ helpdesk/
   number: Number,           // unique, via counters → affiché HD-0042
   title: String,            // requis, 5–120 car.
   description: String,      // requis
-  category: 'hardware' | 'software' | 'network' | 'access' | 'other',
-  priority: 'low' | 'medium' | 'high' | 'critical',
-  status: 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed',
+  category: 'hardware' | 'software' | 'network' | 'access' | 'other',   // ex-table CATEGORIE
+  priority: 'low' | 'medium' | 'high' | 'critical',                      // ex-table PRIORITE
+  priorityRank: Number,     // 1 à 4, dérivé de priority, pour trier par urgence
+  status: 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed', // ex-table STATUT
   createdBy: ObjectId → users,
   assignedTo: ObjectId → users | null,
-  history: [{
+  history: [{               // imbriqué (ex-table ACTION_HISTORIQUE)
     action: 'created' | 'status_changed' | 'priority_changed' | 'assigned',
     from: String, to: String,
     by: ObjectId → users,
@@ -145,15 +311,25 @@ helpdesk/
 
 **counters** — `{ _id: 'ticket', seq: Number }`
 
-### 3.3 Index
+### 3.7 Compromis de la dénormalisation et parades
+
+| Risque | Parade mise en place |
+|--------|---------------------|
+| Pas de clé étrangère : un document peut référencer un utilisateur supprimé | Les comptes ne sont **jamais supprimés**, seulement désactivés (`isActive: false`, règle RG8) |
+| Schéma souple → documents incohérents | **Mongoose** impose types, champs requis, enums et validations |
+| Données dérivées (`priorityRank`, dates) désynchronisées | Calculées **uniquement côté serveur** (hook Mongoose / couche service), jamais envoyées par le client |
+| Valeurs de référence figées dans le code (catégories…) | Accepté pour cette version ; évolution identifiée si l'administration doit les gérer |
+| Affichage des noms (créateur, auteur) nécessite une lecture de `users` | `populate` limité aux champs utiles (`firstName lastName role`) |
+
+### 3.8 Index
 
 | Collection | Index | Requête servie |
 |-----------|-------|----------------|
 | users | `{ email: 1 }` unique | login |
 | tickets | `{ number: 1 }` unique | accès par numéro |
 | tickets | `{ createdBy: 1, createdAt: -1 }` | « Mes tickets » |
-| tickets | `{ status: 1, priority: 1, createdAt: -1 }` | file technicien filtrée |
-| tickets | `{ assignedTo: 1, status: 1 }` | « mes tickets assignés », charge par tech |
+| tickets | `{ status: 1, priorityRank: -1, createdAt: 1 }` | file technicien : filtrée par statut, la plus urgente puis la plus ancienne d'abord |
+| tickets | `{ assignedTo: 1, status: 1 }` | « mes tickets assignés », charge par technicien |
 | comments | `{ ticket: 1, createdAt: 1 }` | fil du ticket |
 | notifications | `{ recipient: 1, read: 1, createdAt: -1 }` | centre de notifications |
 
