@@ -2,6 +2,7 @@ import http from 'node:http';
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
 import { initSocket } from './socket/index.js';
+import './models/index.js'; // enregistre les modèles : Mongoose crée les index au démarrage
 import app from './app.js';
 
 /**

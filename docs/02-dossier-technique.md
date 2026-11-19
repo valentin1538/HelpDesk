@@ -401,6 +401,29 @@ erDiagram
 | comments | `{ ticket: 1, createdAt: 1 }` | fil du ticket |
 | notifications | `{ recipient: 1, read: 1, createdAt: -1 }` | centre de notifications |
 
+### 3.9 Implémentation Mongoose
+
+Les schémas sont dans `server/src/models/` (point d'import unique `models/index.js`).
+
+| Fichier | Points clés |
+|---------|-------------|
+| `constants.js` | Valeurs de référence remplaçant les tables ROLE / CATEGORIE / PRIORITE / STATUT : `ROLES`, `CATEGORIES`, `PRIORITIES` + `PRIORITY_RANK`, `STATUSES` + `STATUS_TRANSITIONS` (RG3), `HISTORY_ACTIONS`, `NOTIFICATION_TYPES`. Une seule source de vérité pour les enums et les règles. |
+| `User.js` | Email unique, normalisé (minuscules, trim) et vérifié ; `password` en `select: false` et retiré de `toJSON` ; `isActive` (RG8) ; virtuel `fullName`. |
+| `Ticket.js` | Historique **imbriqué** (sous-schéma sans `_id`) ; enums avec messages en français ; virtuel `reference` (`HD-0042`) ; index du §3.8. |
+| `Comment.js` | Collection séparée, `isInternal` (RG6), `createdAt` seul (un commentaire n'est pas modifié). |
+| `Notification.js` | Collection séparée, `read` par défaut à `false`. |
+| `Counter.js` | `Counter.next('ticket')` : `findOneAndUpdate` + `$inc` + `upsert`, **atomique** (pas de doublon en cas de créations simultanées). |
+
+**Hooks du ticket** (la logique de cohérence est dans le modèle, pas dans chaque contrôleur) :
+
+| Hook | Rôle | Pourquoi ce moment |
+|------|------|--------------------|
+| `pre('validate')` | `priorityRank` recalculé depuis `priority` | Le rang n'est jamais fourni par le client |
+| `pre('save')` (création) | Attribution du numéro + entrée d'historique `created` | **Après** validation : un ticket invalide ne consomme pas de numéro → numérotation sans trous |
+| `pre('findOneAndUpdate' / 'updateOne')` | Resynchronise `priorityRank` si `priority` est modifiée par une requête de mise à jour | Filet de sécurité : les services privilégient `doc.save()` |
+
+**Vérifications effectuées** (base de test jetable) : normalisation de l'email, mot de passe jamais renvoyé, doublon d'email → 409, validations → 400 avec détail par champ, numérotation séquentielle **sans doublon sur 20 créations simultanées** et **sans trou** après des créations invalides, `priorityRank` synchronisé (création, `save`, `findByIdAndUpdate`), file technicien triée par urgence **en utilisant l'index** `{ status, priorityRank, createdAt }` (vérifié par `explain()`), `populate` du créateur sans mot de passe.
+
 ## 4. API REST
 
 Base : `/api` — JSON — Auth : header `Authorization: Bearer <token>`.
