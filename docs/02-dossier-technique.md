@@ -29,14 +29,14 @@ flowchart LR
 helpdesk/
 ├── server/
 │   ├── src/
-│   │   ├── config/        # db.js, env
+│   │   ├── config/        # env.js (variables validées), db.js (connexion Mongoose)
 │   │   ├── models/        # User, Ticket, Comment, Notification, Counter
-│   │   ├── routes/        # auth, tickets, comments, users, notifications, stats
+│   │   ├── routes/        # index.js (montage /api, une ligne par US) + auth, tickets…
 │   │   ├── controllers/
 │   │   ├── services/      # logique métier (transitions, historique, notifications)
-│   │   ├── middlewares/   # auth, requireRole, validate, errorHandler
-│   │   ├── socket/        # init io, auth handshake, handlers
-│   │   ├── utils/
+│   │   ├── middlewares/   # notFound, errorHandler, auth, requireRole
+│   │   ├── socket/        # initSocket / getIO, auth handshake, handlers
+│   │   ├── utils/         # AppError
 │   │   ├── app.js         # point d'entrée Express : configuration de l'application
 │   │   └── server.js      # point d'entrée Node.js : démarrage (BDD, HTTP, Socket.io)
 │   ├── seed/
@@ -58,21 +58,28 @@ Le serveur est volontairement découpé en **deux fichiers d'entrée** aux respo
 
 | Fichier | Rôle | Contenu |
 |---------|------|---------|
-| **`app.js`** — l'application **Express** | *Décrit* l'application, sans la lancer | Création de `app = express()`, middlewares globaux (`helmet`, `cors`, `express.json`, rate limit), montage des routes `/api/*`, gestionnaire d'erreurs. **Exporte** `app`. |
-| **`server.js`** — le processus **Node.js** | *Démarre* l'application | Chargement de `.env`, connexion MongoDB (Mongoose), création du serveur HTTP (`http.createServer(app)`), branchement de **Socket.io** sur ce même serveur, `listen(PORT)`, arrêt propre (fermeture BDD sur `SIGINT`/`SIGTERM`). |
+| **`app.js`** — l'application **Express** | *Décrit* l'application, sans la lancer | Création de `app = express()`, middlewares globaux (`helmet`, `cors`, `express.json` limité à 100 ko), montage des routes `/api`, puis `notFound` et `errorHandler` en fin de chaîne. **Exporte** `app` (`export default`). |
+| **`server.js`** — le processus **Node.js** | *Démarre* l'application | Variables validées (`config/env.js`), connexion MongoDB, création du serveur HTTP (`http.createServer(app)`), branchement de **Socket.io** sur ce même serveur, `listen(PORT)`, **arrêt propre**. |
+
+Le serveur est écrit en **ES Modules** (`"type": "module"`) : `import` / `export`, extension `.js` obligatoire dans les imports locaux, `await` utilisable au niveau du module.
 
 ```js
-// server.js (principe)
-const http = require('http');
-const app = require('./app');
-const connectDB = require('./config/db');
-const initSocket = require('./socket');
+// server.js (extrait)
+import http from 'node:http';
+import { env } from './config/env.js';
+import { connectDB } from './config/db.js';
+import { initSocket } from './socket/index.js';
+import app from './app.js';
 
-await connectDB();
-const server = http.createServer(app);  // HTTP partagé…
-initSocket(server);                     // …par l'API REST et Socket.io
-server.listen(process.env.PORT);
+await connectDB();                       // await au niveau du module (ES Modules)
+const server = http.createServer(app);   // HTTP partagé…
+const io = initSocket(server);           // …par l'API REST et Socket.io
+server.listen(env.port);
 ```
+
+**Arrêt propre** (`SIGINT` = Ctrl+C, `SIGTERM` = `docker stop`, `SIGUSR2` = redémarrage nodemon) : le serveur cesse d'accepter des connexions, ferme Socket.io et le serveur HTTP, puis la connexion MongoDB, et sort. Un délai de 10 s force l'arrêt si quelque chose bloque. Les requêtes en cours ne sont pas coupées brutalement et aucune connexion à la base n'est laissée ouverte.
+
+**Démarrage défensif** : `config/env.js` vérifie au lancement les variables indispensables (`MONGO_URI`, `JWT_SECRET`) et refuse de démarrer avec un message explicite si l'une manque.
 
 **Pourquoi cette séparation ?**
 - **Socket.io a besoin du serveur HTTP Node**, pas de l'application Express : `server.js` crée ce serveur et y attache à la fois Express et Socket.io, sur le **même port**.
@@ -444,6 +451,26 @@ Format d'erreur : `{ "error": { "code": "FORBIDDEN", "message": "..." } }`.
 | GET | `/stats/timeline?from=&to=` | Tickets créés / résolus par jour |
 
 Codes : `200` OK · `201` créé · `400` validation · `401` non authentifié · `403` interdit · `404` introuvable · `409` conflit (email existant, transition invalide).
+
+### Gestion des erreurs
+
+Toutes les erreurs passent par un **middleware unique** (`middlewares/errorHandler.js`), placé en dernier dans `app.js`. Le client reçoit **toujours** le même format :
+
+```json
+{ "error": { "code": "VALIDATION_ERROR", "message": "Données invalides", "details": { "title": "Le titre est requis" } } }
+```
+
+| Origine | HTTP | `code` |
+|---------|------|--------|
+| `throw AppError.notFound(...)` / `.forbidden()` / `.conflict()`… (erreurs métier) | selon l'erreur | `NOT_FOUND`, `FORBIDDEN`, `CONFLICT`, ou code dédié (ex. `INVALID_TRANSITION`) |
+| Route inexistante (`middlewares/notFound.js`) | 404 | `NOT_FOUND` |
+| Validation Mongoose (required, enum…) | 400 | `VALIDATION_ERROR` + `details` par champ |
+| ObjectId mal formé dans l'URL | 400 | `INVALID_ID` |
+| Index unique violé (ex. email déjà utilisé) | 409 | `DUPLICATE` |
+| Corps JSON illisible / trop volumineux | 400 / 413 | `INVALID_JSON` / `PAYLOAD_TOO_LARGE` |
+| Toute autre erreur | 500 | `INTERNAL_ERROR` (message masqué en production, détail dans les logs) |
+
+**Choix :** Express 5 transmet automatiquement au gestionnaire d'erreurs les exceptions levées dans les handlers `async` : les contrôleurs n'ont **ni `try/catch` ni wrapper**, ils lèvent une `AppError` et le format de réponse est garanti partout.
 
 ## 5. Temps réel — Socket.io
 
