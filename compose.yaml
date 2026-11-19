@@ -18,7 +18,11 @@ services:
   # API Express + Socket.io
   server:
     build: .
-    command: npm run dev:docker -w server
+    init: true # transmet proprement SIGTERM (docker stop) au processus Node
+    working_dir: /app/server
+    # nodemon lancé directement (sans npm) : les signaux d'arrêt arrivent à Node sans intermédiaire.
+    # --legacy-watch : scrutation, car les événements de fichiers Windows ne traversent pas les volumes.
+    command: npx nodemon --legacy-watch src/server.js
     env_file: ./server/.env
     ports:
       - '5000:5000'
@@ -32,6 +36,7 @@ services:
   # Client React (Vite)
   client:
     build: .
+    init: true
     command: npm run dev -w client -- --host 0.0.0.0
     environment:
       API_TARGET: http://server:5000 # le proxy Vite joint l'API par le réseau Docker
