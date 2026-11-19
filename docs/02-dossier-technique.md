@@ -92,6 +92,38 @@ server.listen(process.env.PORT);
 | Sécurité HTTP | helmet, cors (origine du front), express-rate-limit sur `/auth` | Bonnes pratiques de base |
 | Graphiques | Recharts | Simple à intégrer en React |
 | Configuration | dotenv | Secrets hors du dépôt |
+| Environnement de développement | **Docker + Docker Compose** (image `node:20-alpine`, `mongo:8`) | Environnement **identique** pour toute l'équipe (version de Node, dépendances installées par `npm ci` depuis le lockfile, version de MongoDB) ; démarrage complet en une commande, y compris pour le jury ; préfigure le déploiement conteneurisé et la montée en charge (plusieurs instances `server`) |
+| Monorepo | npm workspaces (`server`, `client`) | Un seul `package-lock.json`, une commande pour tout installer / lancer |
+
+### Environnement Docker
+
+```mermaid
+flowchart LR
+  subgraph Hôte["Poste développeur (Windows)"]
+    SRC["Code source<br/>server/ · client/"]
+    BR["Navigateur"]
+  end
+  subgraph Compose["docker compose — réseau helpdesk"]
+    C["client<br/>Vite :5173"]
+    S["server<br/>Express + Socket.io :5000"]
+    M[("mongo<br/>MongoDB 8 :27017")]
+  end
+  SRC -- volume monté --> C
+  SRC -- volume monté --> S
+  BR -- localhost:5173 --> C
+  C -- "proxy /api, /socket.io<br/>http://server:5000" --> S
+  S -- "mongodb://mongo:27017" --> M
+  M --- V[("volume mongo-data")]
+```
+
+| Élément | Choix | Raison |
+|---------|-------|--------|
+| Une seule image (`Dockerfile` racine) pour `server` et `client` | Monorepo à lockfile unique | Dépendances installées une fois, cohérentes entre les deux applications |
+| Code monté en volume, `node_modules` conservés dans l'image | Développement à chaud | On édite sur l'hôte ; les modules restent ceux compilés pour Linux |
+| `nodemon --legacy-watch` et `usePolling` côté Vite | Volumes Windows | Les événements de fichiers Windows ne traversent pas les volumes : détection par scrutation |
+| Service `mongo` + volume nommé `mongo-data` | Base locale par défaut | Fonctionne hors connexion, données persistées entre redémarrages ; Atlas reste possible via `MONGO_URI` |
+| Healthcheck MongoDB + `depends_on: service_healthy` | Ordre de démarrage | L'API ne démarre qu'une fois la base prête |
+| Secrets via `env_file: server/.env` (exclu de l'image par `.dockerignore`) | Sécurité | Aucun secret dans l'image ni dans Git |
 | Numérotation tickets | Collection `counters` + `findOneAndUpdate($inc)` | Numéro lisible `HD-0042` atomique, plus parlant qu'un ObjectId pour l'utilisateur |
 
 ## 3. Modèle de données
