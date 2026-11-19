@@ -40,38 +40,67 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 
 ---
 
-## Sprint 1 — Cadrage & conception (aujourd'hui)
+## Types d'éléments du backlog
+
+Le temps du projet ne sert pas qu'aux fonctionnalités : cadrage, conception, environnement et documentation en consomment une part importante. Ils sont donc suivis dans le Kanban au même titre que les user stories.
+
+| Type | Préfixe | Label | Exemple |
+|------|---------|-------|---------|
+| **User story** (valeur pour un utilisateur) | `US` | `must` / `should` / `could` | US02 — Déclarer un incident |
+| **Tâche technique** (gestion de projet, conception, socle, outillage) | `TECH` | `tech` | TECH-10 — Initialisation du serveur Express |
+
+Les deux types sont estimés en story points et comptent dans la vélocité.
+
+## Sprint 1 — Cadrage & conception (17/11) — ✅ terminé
 
 **Objectif :** savoir exactement quoi construire et comment.
 
-| Tâche                                                                                                                                           | Qui      | État |
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---- |
-| Analyse du besoin, parties prenantes, personas                                                                                                  | Valentin | ✅   |
-| Fonctionnalités + backlog MoSCoW en user stories, règles de gestion                                                                             | Valentin | ✅   |
-| Architecture, modèle de données, contrat d'API, événements Socket.io                                                                            | Valentin | ✅   |
-| Dépôt Git (`main` + `develop`), `.gitignore`, README                                                                                            | Valentin | ✅   |
-| Kanban GitHub Projects avec les 20 US (#1 → #20)                                                                                                | Valentin | ✅   |
-| Démarrer le rapport d'utilisation de l'IA                                                                                                       | Valentin | ✅   |
-| Donner l'accès au Kanban à Edoardo                                                                                                              | Valentin | ✅   |
-| Maquettes basse fidélité (Excalidraw/Figma) : login, mes tickets, nouveau ticket, détail ticket, file technicien, dashboard → `docs/maquettes/` | Edoardo  | ⬜   |
-| Relecture croisée du cadrage et du dossier technique                                                                                            | Les deux | ✅   |
-| Préparer l'environnement : Node ≥ 20, MongoDB (local ou Atlas partagé)                                                                          | Les deux | ⬜   |
+| ID | Tâche | Qui | Pts | État |
+|----|-------|-----|-----|------|
+| TECH-01 | Cadrage fonctionnel : besoin, parties prenantes, personas, backlog MoSCoW, règles de gestion | Valentin | 5 | ✅ |
+| TECH-02 | Conception technique : architecture, contrat d'API, événements Socket.io, points d'entrée serveur | Valentin | 5 | ✅ |
+| TECH-03 | Dépôt Git et workflow (`main` / `develop`, `.gitignore`, README, conventions) | Valentin | 1 | ✅ |
+| TECH-04 | Kanban GitHub Projects : 20 US, labels, accès partagé avec Edoardo | Valentin | 2 | ✅ |
+| TECH-05 | Maquettes basse fidélité (5 écrans) — PR #21 à corriger puis merger | Edoardo | 3 | 🔍 en revue |
+| TECH-06 | Environnement de dev : Node ≥ 20, cluster Atlas M0 partagé, `.env` | Les deux | 2 | ✅ |
+| TECH-07 | Rapport IA — Sprint 1 | Valentin | 1 | ✅ |
+| — | Relecture croisée du cadrage et du dossier technique | Les deux | — | ✅ |
 
-**Livrable :** dossier de cadrage v1, dossier technique v0, maquettes.
+**Vélocité Sprint 1 :** 16 pts terminés (+ 3 pts en revue).
+**Livrables :** dossier de cadrage v1, dossier technique v0, maquettes.
 
-## Sprint 2 — Socle API + squelette front
+## Sprint 2 — Données, socle API + squelette front
 
-**Objectif :** API d'authentification et de tickets fonctionnelle ; front initialisé avec authentification.
+**Objectif :** modèle de données conçu et implémenté, API d'authentification et de tickets fonctionnelle, front initialisé avec l'authentification.
 
-| Valentin — `server/`                                                                  | Edoardo — `client/`                                         |
-| ------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| Init Express, connexion Mongoose, structure en couches, gestion d'erreurs centralisée | Init Vite + React Router, layout, navigation                |
-| Modèles `User`, `Ticket`, `Comment`, `Notification`, `Counter`                        | Client axios (intercepteur JWT) + `AuthContext`             |
-| US01 auth (register/login/me) + US09 middlewares `auth` / `requireRole`               | US01 pages Login / Register, US09 routes protégées par rôle |
-| US02 création ticket, US05 statut/assignation (RG2–RG5), US06 commentaires            | US02 formulaire Nouveau ticket                              |
-| Script de seed (comptes de démo + tickets), collection Postman                        |                                                             |
+### Tâches techniques
 
-**Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel.
+| ID | Tâche | Qui | Pts | État |
+|----|-------|-----|-----|------|
+| TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin | 3 | ✅ |
+| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) | Valentin | 1 | ⬜ |
+| TECH-10 | Initialisation du serveur Express (ES Modules, `app.js` / `server.js`, Mongoose, erreurs, `/api/health`) | Valentin | 3 | ⬜ |
+| TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ⬜ |
+| TECH-12 | Initialisation du client React (Vite, React Router, axios, proxy, layout) | Edoardo | 2 | ⬜ |
+| TECH-13 | Script de seed (comptes et tickets de démo) | Valentin | 2 | ⬜ |
+| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ⬜ |
+| TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
+
+### User stories
+
+| US | Valentin — `server/` | Edoardo — `client/` | Pts |
+|----|----------------------|---------------------|-----|
+| US01 | Routes register / login / me, bcrypt, JWT | Pages Login / Register, `AuthContext` | 5 |
+| US09 | Middlewares `auth` / `requireRole` | Routes protégées par rôle | 3 |
+| US02 | `POST /tickets`, numéro `HD-XXXX`, `priorityRank` | Formulaire Nouveau ticket | 3 |
+| US05 | Statut / assignation (RG2–RG5), historique imbriqué | — (UI au Sprint 3) | 3 |
+| US06 | Routes commentaires (collection `comments`) | — (UI au Sprint 3) | 3 |
+
+**Charge prévue :** 16 pts de tâches techniques (dont 3 déjà faits) + 17 pts d'US. Sprint chargé côté backend : si besoin, TECH-14 (Postman) glisse au Sprint 3 ; les US Must restent prioritaires.
+
+**Ordre de réalisation backend :** TECH-09 → TECH-10 → TECH-11 → US01 → US09 → US02 → US05 → US06 → TECH-13 → TECH-14.
+
+**Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel en base.
 
 ## Sprint 3 — Parcours complets
 
