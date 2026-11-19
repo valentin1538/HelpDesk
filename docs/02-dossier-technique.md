@@ -37,7 +37,8 @@ helpdesk/
 │   │   ├── middlewares/   # auth, requireRole, validate, errorHandler
 │   │   ├── socket/        # init io, auth handshake, handlers
 │   │   ├── utils/
-│   │   └── app.js / server.js
+│   │   ├── app.js         # point d'entrée Express : configuration de l'application
+│   │   └── server.js      # point d'entrée Node.js : démarrage (BDD, HTTP, Socket.io)
 │   ├── seed/
 │   └── .env.example
 ├── client/
@@ -50,6 +51,34 @@ helpdesk/
 ├── docs/
 └── README.md
 ```
+
+### Deux points d'entrée côté serveur : `app.js` et `server.js`
+
+Le serveur est volontairement découpé en **deux fichiers d'entrée** aux responsabilités distinctes :
+
+| Fichier | Rôle | Contenu |
+|---------|------|---------|
+| **`app.js`** — l'application **Express** | *Décrit* l'application, sans la lancer | Création de `app = express()`, middlewares globaux (`helmet`, `cors`, `express.json`, rate limit), montage des routes `/api/*`, gestionnaire d'erreurs. **Exporte** `app`. |
+| **`server.js`** — le processus **Node.js** | *Démarre* l'application | Chargement de `.env`, connexion MongoDB (Mongoose), création du serveur HTTP (`http.createServer(app)`), branchement de **Socket.io** sur ce même serveur, `listen(PORT)`, arrêt propre (fermeture BDD sur `SIGINT`/`SIGTERM`). |
+
+```js
+// server.js (principe)
+const http = require('http');
+const app = require('./app');
+const connectDB = require('./config/db');
+const initSocket = require('./socket');
+
+await connectDB();
+const server = http.createServer(app);  // HTTP partagé…
+initSocket(server);                     // …par l'API REST et Socket.io
+server.listen(process.env.PORT);
+```
+
+**Pourquoi cette séparation ?**
+- **Socket.io a besoin du serveur HTTP Node**, pas de l'application Express : `server.js` crée ce serveur et y attache à la fois Express et Socket.io, sur le **même port**.
+- **Testabilité** : `app.js` s'importe sans ouvrir de port ni se connecter à la base, ce qui permet de tester les routes (ex. Supertest) indépendamment du démarrage.
+- **Montée en charge** : seul `server.js` change pour lancer plusieurs processus (module `cluster` / PM2, adapter Redis pour Socket.io) ; la configuration de l'application reste identique.
+- **Lisibilité** : *quoi* (routes, middlewares) d'un côté, *comment on démarre* (BDD, port, temps réel) de l'autre.
 
 ## 2. Choix techniques
 
