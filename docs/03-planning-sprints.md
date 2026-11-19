@@ -4,14 +4,21 @@
 
 ## Équipe
 
-| Membre       | Rôle projet                                                           | Domaine technique principal                               |
-| ------------ | --------------------------------------------------------------------- | --------------------------------------------------------- |
-| **Valentin** | Chef de projet (animation des rituels, Kanban, livrables, rapport IA) | Backend : API Express, modèle Mongoose, serveur Socket.io |
-| **Edoardo**  | Développeur                                                           | Frontend : React, client Socket.io, dashboard statistique |
+| Membre       | Rôle projet                                                           | Développement                 |
+| ------------ | --------------------------------------------------------------------- | ----------------------------- |
+| **Valentin** | Chef de projet (animation des rituels, Kanban, livrables, rapport IA) | Full-stack, par user story    |
+| **Edoardo**  | Développeur                                                           | Full-stack, par user story    |
 
-Les deux pistes avancent **en parallèle** chaque jour : le front se développe contre le contrat d'API défini dans le [dossier technique](02-dossier-technique.md#4-api-rest) (données simulées tant que la route n'est pas prête), puis s'intègre à l'API réelle dès qu'elle est mergée.
+**Répartition par user story (à partir du Sprint 2).** Chaque US est prise en charge **de bout en bout** par un seul membre : modèle, route API, règles métier, écran React et test. Au Sprint 1, la répartition se faisait par couche (back / front) ; nous l'avons abandonnée car elle créait des dépendances d'attente entre nous et cantonnait chacun à une moitié de l'application.
 
-**Revue croisée :** chaque PR est relue par l'autre membre → Valentin relit le front, Edoardo relit le back. C'est aussi ce qui permet à chacun d'expliquer toute l'application en soutenance.
+Bénéfices :
+- **chacun touche à tout** (Mongoose, Express, Socket.io, React) et peut expliquer n'importe quelle partie en soutenance ;
+- une US est **livrable et testable seule** (une PR = une fonctionnalité complète) ;
+- moins d'attente : celui qui écrit la route écrit aussi l'écran qui l'appelle.
+
+**Contrats partagés** (fixés avant de coder, pour que les US avancent en parallèle) : format des erreurs `{ error: { code, message } }`, JWT transmis en `Authorization: Bearer <token>` avec la charge `{ sub: <userId>, role }`, routes et réponses du [dossier technique](02-dossier-technique.md#4-api-rest).
+
+**Revue croisée :** chaque PR est relue et approuvée par l'autre membre avant le merge.
 
 ## Rituels (format journée)
 
@@ -36,7 +43,7 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 - `main` : version stable / livrée — `develop` : intégration
 - Branches `feat/<id>-<nom>` (ex : `feat/US02-create-ticket`), `fix/...`, `docs/...`
 - Commits conventionnels : `feat:`, `fix:`, `docs:`, `chore:`, `refactor:`
-- Pour limiter les conflits : Valentin travaille dans `server/`, Edoardo dans `client/` ; les fichiers communs (README, docs) passent par des PR courtes
+- Pour limiter les conflits (on touche tous les deux `server/` et `client/`) : PR **petites et fréquentes** (une par US), `git pull` de `develop` avant de commencer et avant d'ouvrir la PR ; les points d'assemblage partagés (montage des routes dans `routes/index.js`, déclaration des pages dans le routeur React) ne reçoivent qu'**une ligne par US**
 
 ---
 
@@ -78,29 +85,43 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | ID | Tâche | Qui | Pts | État |
 |----|-------|-----|-----|------|
 | TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin | 3 | ✅ |
-| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37 | Valentin | 1 | 🔍 en revue |
-| TECH-10 | Initialisation du serveur Express (ES Modules, `app.js` / `server.js`, Mongoose, erreurs, `/api/health`) | Valentin | 3 | ⬜ |
+| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37 | Valentin | 1 | ✅ |
+| TECH-16 | **Dockerisation** de l'environnement (compose : mongo, server, client) — PR #37 | Valentin | 3 | ✅ |
+| TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`) | Valentin | 3 | 🔄 |
 | TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ⬜ |
-| TECH-12 | Initialisation du client React (Vite, React Router, axios, proxy, layout) | Edoardo | 2 | ⬜ |
-| TECH-13 | Script de seed (comptes et tickets de démo) | Valentin | 2 | ⬜ |
-| TECH-14 | Collection Postman / tests de l'API | **Edoardo** | 1 | ⬜ |
+| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | ⬜ |
+| TECH-13 | Script de seed (comptes et tickets de démo) | Edoardo | 2 | ⬜ |
+| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ⬜ |
 | TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
 
-### User stories
+Les tâches techniques restent réparties selon leur nature : **TECH-10 / TECH-11** posent le socle serveur dont dépendent toutes les US, **TECH-12** le socle client. Elles sont faites **en premier, en parallèle**, puis chacun enchaîne sur ses US.
 
-| US | Valentin — `server/` | Edoardo — `client/` | Pts |
-|----|----------------------|---------------------|-----|
-| US01 | Routes register / login / me, bcrypt, JWT | Pages Login / Register, `AuthContext` | 5 |
-| US09 | Middlewares `auth` / `requireRole` | Routes protégées par rôle | 3 |
-| US02 | `POST /tickets`, numéro `HD-XXXX`, `priorityRank` | Formulaire Nouveau ticket | 3 |
-| US05 | Statut / assignation (RG2–RG5), historique imbriqué | — (UI au Sprint 3) | 3 |
-| US06 | Routes commentaires (collection `comments`) | — (UI au Sprint 3) | 3 |
+### User stories — répartition par US (full-stack)
 
-**Charge prévue :** 16 pts de tâches techniques (dont 3 déjà faits) + 17 pts d'US. **Rééquilibrage :** TECH-14 (Postman) passe à Edoardo — sa piste front est moins chargée, et tester l'API lui donne la maîtrise du backend pour la soutenance. Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentification, droits et création de ticket restent prioritaires.
+| US | Responsable | Contenu de bout en bout | Pts |
+|----|-------------|-------------------------|-----|
+| **US01** — Inscription et connexion | **Valentin** | Hash du mot de passe (hook `User`), routes `register` / `login` / `me`, génération du JWT · pages Login / Register, `AuthContext` (token, déconnexion) | 5 |
+| **US09** — Protection par rôle | **Edoardo** | Middlewares `auth` (vérif. JWT, compte actif) et `requireRole` · composant de route protégée côté React, redirections selon le rôle | 3 |
+| **US02** — Déclarer un incident | **Edoardo** | `POST /api/tickets` (validation, numéro `HD-XXXX`, `priorityRank`, historique « created ») · formulaire Nouveau ticket | 3 |
+| **US05** — Statut et assignation | **Valentin** | `PATCH /status` et `/assign` (transitions RG3, auto-assignation RG4, historique RG5, dates de suivi) · boutons d'action minimaux sur le détail ticket | 3 |
+| **US06** — Commentaires | **Edoardo** | `GET` / `POST /api/tickets/:id/comments` (droits, RG7) · fil de commentaires minimal sur le détail ticket | 3 |
 
-**Ordre de réalisation** — Valentin : TECH-09 → TECH-10 → TECH-11 → US01 → US09 → US02 → US05 → US06 → TECH-13 → TECH-15 · Edoardo : revue PR #37 → TECH-12 → US01 / US09 / US02 (front) → TECH-14.
+**Charge restante :** Valentin 3 (TECH-10) + 3 (TECH-11) + 5 (US01) + 3 (US05) + 1 (TECH-14) + 1 (TECH-15) = **16 pts** · Edoardo 2 (TECH-12) + 3 (US09) + 3 (US02) + 3 (US06) + 2 (TECH-13) = **13 pts**.
+
+**Ordre et dépendances**
+
+| Étape | Valentin | Edoardo |
+|-------|----------|---------|
+| 1 | TECH-10 puis TECH-11 (modèles) | TECH-12 (client) |
+| 2 | US01 (dès que `User` existe) | US09 : le middleware s'écrit contre le contrat JWT `{ sub, role }`, sans attendre US01 |
+| 3 | US05 (dès que `Ticket` existe) | US02, puis US06 |
+| 4 | TECH-14 (Postman sur toutes les routes), TECH-15 | TECH-13 (seed : utilise les modèles et le hash de US01) |
+
+Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentification, droits et création de ticket restent prioritaires.
 
 **Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel en base.
+
+> À partir du Sprint 3, les colonnes « back / front » ci-dessous sont indicatives : la répartition se fait par US au sprint planning du jour.
 
 ## Sprint 3 — Parcours complets
 
