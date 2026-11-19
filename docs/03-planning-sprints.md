@@ -78,12 +78,12 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | ID | Tâche | Qui | Pts | État |
 |----|-------|-----|-----|------|
 | TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin | 3 | ✅ |
-| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) | Valentin | 1 | ⬜ |
+| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37 | Valentin | 1 | 🔍 en revue |
 | TECH-10 | Initialisation du serveur Express (ES Modules, `app.js` / `server.js`, Mongoose, erreurs, `/api/health`) | Valentin | 3 | ⬜ |
 | TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ⬜ |
 | TECH-12 | Initialisation du client React (Vite, React Router, axios, proxy, layout) | Edoardo | 2 | ⬜ |
 | TECH-13 | Script de seed (comptes et tickets de démo) | Valentin | 2 | ⬜ |
-| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ⬜ |
+| TECH-14 | Collection Postman / tests de l'API | **Edoardo** | 1 | ⬜ |
 | TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
 
 ### User stories
@@ -96,9 +96,9 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | US05 | Statut / assignation (RG2–RG5), historique imbriqué | — (UI au Sprint 3) | 3 |
 | US06 | Routes commentaires (collection `comments`) | — (UI au Sprint 3) | 3 |
 
-**Charge prévue :** 16 pts de tâches techniques (dont 3 déjà faits) + 17 pts d'US. Sprint chargé côté backend : si besoin, TECH-14 (Postman) glisse au Sprint 3 ; les US Must restent prioritaires.
+**Charge prévue :** 16 pts de tâches techniques (dont 3 déjà faits) + 17 pts d'US. **Rééquilibrage :** TECH-14 (Postman) passe à Edoardo — sa piste front est moins chargée, et tester l'API lui donne la maîtrise du backend pour la soutenance. Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentification, droits et création de ticket restent prioritaires.
 
-**Ordre de réalisation backend :** TECH-09 → TECH-10 → TECH-11 → US01 → US09 → US02 → US05 → US06 → TECH-13 → TECH-14.
+**Ordre de réalisation** — Valentin : TECH-09 → TECH-10 → TECH-11 → US01 → US09 → US02 → US05 → US06 → TECH-13 → TECH-15 · Edoardo : revue PR #37 → TECH-12 → US01 / US09 / US02 (front) → TECH-14.
 
 **Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel en base.
 
