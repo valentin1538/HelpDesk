@@ -61,12 +61,12 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | TECH-02 | Conception technique : architecture, contrat d'API, événements Socket.io, points d'entrée serveur | Valentin | 5 | ✅ |
 | TECH-03 | Dépôt Git et workflow (`main` / `develop`, `.gitignore`, README, conventions) | Valentin | 1 | ✅ |
 | TECH-04 | Kanban GitHub Projects : 20 US, labels, accès partagé avec Edoardo | Valentin | 2 | ✅ |
-| TECH-05 | Maquettes basse fidélité (5 écrans) — PR #21 à corriger puis merger | Edoardo | 3 | 🔍 en revue |
+| TECH-05 | Maquettes basse fidélité (5 écrans) — [docs/maquettes](maquettes/maquettes.png) | Edoardo | 3 | ✅ |
 | TECH-06 | Environnement de dev : Node ≥ 20, cluster Atlas M0 partagé, `.env` | Les deux | 2 | ✅ |
 | TECH-07 | Rapport IA — Sprint 1 | Valentin | 1 | ✅ |
 | — | Relecture croisée du cadrage et du dossier technique | Les deux | — | ✅ |
 
-**Vélocité Sprint 1 :** 16 pts terminés (+ 3 pts en revue).
+**Vélocité Sprint 1 :** 19 pts terminés.
 **Livrables :** dossier de cadrage v1, dossier technique v0, maquettes.
 
 ## Sprint 2 — Données, socle API + squelette front
