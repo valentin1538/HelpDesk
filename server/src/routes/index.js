@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { isDbConnected } from '../config/db.js';
+import authRoutes from './authRoutes.js';
 
 const router = Router();
 
@@ -10,7 +11,7 @@ router.get('/health', (req, res) => {
 });
 
 // Montage des routes métier — UNE ligne par US pour limiter les conflits Git :
-// router.use('/auth', authRoutes);              // US01
+router.use('/auth', authRoutes); // US01
 // router.use('/tickets', ticketRoutes);         // US02, US04, US05
 // router.use('/tickets/:id/comments', commentRoutes); // US06
 // router.use('/users', userRoutes);             // US14
