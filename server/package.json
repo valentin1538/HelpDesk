@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
+    "dev:docker": "nodemon --legacy-watch src/server.js",
     "start": "node src/server.js"
   },
   "dependencies": {
@@ -14,5 +15,8 @@
     "helmet": "^8.3.0",
     "mongoose": "^9.12.2",
     "socket.io": "^4.8.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
