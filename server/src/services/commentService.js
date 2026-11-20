@@ -61,7 +61,7 @@ export async function createComment(ticketId, { content, isInternal }, actor) {
     ticket: ticket._id,
     author: actor._id,
     content,
-    isInternal: isStaff(actor) ? Boolean(isInternal) : false,
+    isInternal: isStaff(actor) && isInternal === true, // seul le booléen true crée une note interne
   });
 
   return comment.populate({ path: 'author', select: USER_PUBLIC_FIELDS });

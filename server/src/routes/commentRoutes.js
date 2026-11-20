@@ -39,7 +39,12 @@ router.post(
     .withMessage('Le commentaire ne peut pas être vide')
     .isLength({ max: 5000 })
     .withMessage('Le commentaire ne doit pas dépasser 5000 caractères'),
-  body('isInternal').optional().isBoolean().withMessage('isInternal doit être un booléen'),
+  // Booléen JSON strict : isBoolean() seul accepte la chaîne "false", que Boolean("false")
+  // transformerait en true → un message voulu public deviendrait une note interne.
+  body('isInternal')
+    .optional()
+    .custom((value) => typeof value === 'boolean')
+    .withMessage('isInternal doit être un booléen (true ou false)'),
   validate,
   controller.create,
 );

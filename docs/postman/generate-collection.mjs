@@ -476,6 +476,16 @@ pm.test('201 mais isInternal forcé à false', () => {
   pm.expect(comment.isInternal).to.eql(false);
 });`,
         }),
+        req('isInternal en chaîne "false" → 400', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'techToken',
+          body: { content: 'Message que je veux public', isInternal: 'false' },
+          description:
+            'Régression (audit Sprint 2) : la chaîne "false" était acceptée puis convertie en true → note interne involontaire. Seul un booléen JSON est accepté.',
+          tests: `${expectError(400, 'VALIDATION_ERROR')}
+pm.test('Erreur sur isInternal', () => pm.expect(pm.response.json().error.details).to.have.property('isInternal'));`,
+        }),
         req('Ticket fermé → commentaire refusé → 409 (RG7)', {
           method: 'POST',
           path: '/tickets/{{ticketId}}/comments',
