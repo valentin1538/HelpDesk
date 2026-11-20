@@ -135,7 +135,7 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 | US09 — protection des routes par rôle | Edoardo | 🔄 en cours (plan détaillé fourni) |
 | TECH-13 — seed | **Valentin** | ⬜ |
 | US02 — déclarer un incident | **Valentin** | ⬜ |
-| US05 — front +  (page détail) | Valentin | ⬜ |
+| US05 — front + `GET /api/tickets/:id` (page détail) | Valentin | ⬜ |
 | US06 — commentaires | **Valentin** | ⬜ |
 | TECH-15 — rapport IA du sprint | Valentin | ⬜ |
 
