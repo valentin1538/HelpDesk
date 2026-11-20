@@ -9,7 +9,10 @@ import Button from '../ui/Button.jsx';
 
 /** Barre latérale : marque, navigation par groupes, carte de l'utilisateur connecté. */
 export default function Sidebar({ open, onClose, onLogout }) {
-  const { user } = useAuth();
+  // `status` sert à afficher la carte utilisateur (et le bouton de déconnexion) ci-dessous :
+  // sans lui, `status` désignerait la globale navigateur window.status ("") → carte jamais affichée.
+  const { user, status } = useAuth();
+
   // US09 — n'afficher que les liens autorisés pour le rôle (groupes vides masqués)
   const visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,

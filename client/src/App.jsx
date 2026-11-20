@@ -32,6 +32,8 @@ export default function App() {
           </Route>
         </Route>
       </Route>
+      {/* URL inconnue → page 404 (hors garde : visible connecté ou non) */}
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 }
