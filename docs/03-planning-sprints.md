@@ -4,14 +4,15 @@
 
 ## Équipe
 
-| Membre       | Rôle projet                                                           | Développement                 |
-| ------------ | --------------------------------------------------------------------- | ----------------------------- |
-| **Valentin** | Chef de projet (animation des rituels, Kanban, livrables, rapport IA) | Full-stack, par user story    |
-| **Edoardo**  | Développeur                                                           | Full-stack, par user story    |
+| Membre       | Rôle projet                                                           | Développement              |
+| ------------ | --------------------------------------------------------------------- | -------------------------- |
+| **Valentin** | Chef de projet (animation des rituels, Kanban, livrables, rapport IA) | Full-stack, par user story |
+| **Edoardo**  | Développeur                                                           | Full-stack, par user story |
 
 **Répartition par user story (à partir du Sprint 2).** Chaque US est prise en charge **de bout en bout** par un seul membre : modèle, route API, règles métier, écran React et test. Au Sprint 1, la répartition se faisait par couche (back / front) ; nous l'avons abandonnée car elle créait des dépendances d'attente entre nous et cantonnait chacun à une moitié de l'application.
 
 Bénéfices :
+
 - **chacun touche à tout** (Mongoose, Express, Socket.io, React) et peut expliquer n'importe quelle partie en soutenance ;
 - une US est **livrable et testable seule** (une PR = une fonctionnalité complète) ;
 - moins d'attente : celui qui écrit la route écrit aussi l'écran qui l'appelle.
@@ -51,10 +52,10 @@ Outil : GitHub Projects « Kanban User Stories » — colonnes `Backlog · To do
 
 Le temps du projet ne sert pas qu'aux fonctionnalités : cadrage, conception, environnement et documentation en consomment une part importante. Ils sont donc suivis dans le Kanban au même titre que les user stories.
 
-| Type | Préfixe | Label | Exemple |
-|------|---------|-------|---------|
-| **User story** (valeur pour un utilisateur) | `US` | `must` / `should` / `could` | US02 — Déclarer un incident |
-| **Tâche technique** (gestion de projet, conception, socle, outillage) | `TECH` | `tech` | TECH-10 — Initialisation du serveur Express |
+| Type                                                                  | Préfixe | Label                       | Exemple                                     |
+| --------------------------------------------------------------------- | ------- | --------------------------- | ------------------------------------------- |
+| **User story** (valeur pour un utilisateur)                           | `US`    | `must` / `should` / `could` | US02 — Déclarer un incident                 |
+| **Tâche technique** (gestion de projet, conception, socle, outillage) | `TECH`  | `tech`                      | TECH-10 — Initialisation du serveur Express |
 
 Les deux types sont estimés en story points et comptent dans la vélocité.
 
@@ -62,16 +63,16 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 
 **Objectif :** savoir exactement quoi construire et comment.
 
-| ID | Tâche | Qui | Pts | État |
-|----|-------|-----|-----|------|
-| TECH-01 | Cadrage fonctionnel : besoin, parties prenantes, personas, backlog MoSCoW, règles de gestion | Valentin | 5 | ✅ |
-| TECH-02 | Conception technique : architecture, contrat d'API, événements Socket.io, points d'entrée serveur | Valentin | 5 | ✅ |
-| TECH-03 | Dépôt Git et workflow (`main` / `develop`, `.gitignore`, README, conventions) | Valentin | 1 | ✅ |
-| TECH-04 | Kanban GitHub Projects : 20 US, labels, accès partagé avec Edoardo | Valentin | 2 | ✅ |
-| TECH-05 | Maquettes basse fidélité (5 écrans) — [docs/maquettes](maquettes/maquettes.png) | Edoardo | 3 | ✅ |
-| TECH-06 | Environnement de dev : Node ≥ 20, cluster Atlas M0 partagé, `.env` | Les deux | 2 | ✅ |
-| TECH-07 | Rapport IA — Sprint 1 | Valentin | 1 | ✅ |
-| — | Relecture croisée du cadrage et du dossier technique | Les deux | — | ✅ |
+| ID      | Tâche                                                                                             | Qui      | Pts | État |
+| ------- | ------------------------------------------------------------------------------------------------- | -------- | --- | ---- |
+| TECH-01 | Cadrage fonctionnel : besoin, parties prenantes, personas, backlog MoSCoW, règles de gestion      | Valentin | 5   | ✅   |
+| TECH-02 | Conception technique : architecture, contrat d'API, événements Socket.io, points d'entrée serveur | Valentin | 5   | ✅   |
+| TECH-03 | Dépôt Git et workflow (`main` / `develop`, `.gitignore`, README, conventions)                     | Valentin | 1   | ✅   |
+| TECH-04 | Kanban GitHub Projects : 20 US, labels, accès partagé avec Edoardo                                | Valentin | 2   | ✅   |
+| TECH-05 | Maquettes basse fidélité (5 écrans) — [docs/maquettes](maquettes/maquettes.png)                   | Edoardo  | 3   | ✅   |
+| TECH-06 | Environnement de dev : Node ≥ 20, cluster Atlas M0 partagé, `.env`                                | Les deux | 2   | ✅   |
+| TECH-07 | Rapport IA — Sprint 1                                                                             | Valentin | 1   | ✅   |
+| —       | Relecture croisée du cadrage et du dossier technique                                              | Les deux | —   | ✅   |
 
 **Vélocité Sprint 1 :** 19 pts terminés.
 **Livrables :** dossier de cadrage v1, dossier technique v0, maquettes.
@@ -82,40 +83,40 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 
 ### Tâches techniques
 
-| ID | Tâche | Qui | Pts | État |
-|----|-------|-----|-----|------|
-| TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin | 3 | ✅ |
-| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37 | Valentin | 1 | ✅ |
-| TECH-16 | **Dockerisation** de l'environnement (compose : mongo, server, client) — PR #37 | Valentin | 3 | ✅ |
-| TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`) | Valentin | 3 | ✅ PR #39 |
-| TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ✅ PR #40 |
-| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | ✅ PR #44 |
-| TECH-13 | Script de seed (comptes et tickets de démo) | Valentin *(repris)* | 2 | ✅ PR #47 |
-| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ✅ PR #43 |
-| TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
+| ID      | Tâche                                                                                                                                                                                                                                              | Qui                 | Pts | État      |
+| ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --- | --------- |
+| TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin            | 3   | ✅        |
+| TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37                                                                                                                                                         | Valentin            | 1   | ✅        |
+| TECH-16 | **Dockerisation** de l'environnement (compose : mongo, server, client) — PR #37                                                                                                                                                                    | Valentin            | 3   | ✅        |
+| TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`)                                                                                                                                                       | Valentin            | 3   | ✅ PR #39 |
+| TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index)                                                                                                                                                                | Valentin            | 3   | ✅ PR #40 |
+| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes)                                                                                                                                                                   | Edoardo             | 2   | ✅ PR #44 |
+| TECH-13 | Script de seed (comptes et tickets de démo)                                                                                                                                                                                                        | Valentin _(repris)_ | 2   | ✅ PR #47 |
+| TECH-14 | Collection Postman / tests de l'API                                                                                                                                                                                                                | Valentin            | 1   | ✅ PR #43 |
+| TECH-15 | Rapport IA — Sprint 2                                                                                                                                                                                                                              | Valentin            | 1   | ⬜        |
 
 Les tâches techniques restent réparties selon leur nature : **TECH-10 / TECH-11** posent le socle serveur dont dépendent toutes les US, **TECH-12** le socle client. Elles sont faites **en premier, en parallèle**, puis chacun enchaîne sur ses US.
 
 ### User stories — répartition par US (full-stack)
 
-| US | Responsable | Contenu de bout en bout | Pts |
-|----|-------------|-------------------------|-----|
-| **US01** — Inscription et connexion | **Valentin** | Hash du mot de passe (hook `User`), routes `register` / `login` / `me`, génération du JWT · pages Login / Register, `AuthContext` (token, déconnexion) | 5 |
-| **US09** — Protection par rôle | **Edoardo** | Middlewares `auth` (vérif. JWT, compte actif) et `requireRole` · composant de route protégée côté React, redirections selon le rôle | 3 |
-| **US02** — Déclarer un incident | **Edoardo** | `POST /api/tickets` (validation, numéro `HD-XXXX`, `priorityRank`, historique « created ») · formulaire Nouveau ticket | 3 |
-| **US05** — Statut et assignation | **Valentin** | `PATCH /status` et `/assign` (transitions RG3, auto-assignation RG4, historique RG5, dates de suivi) · boutons d'action minimaux sur le détail ticket | 3 |
-| **US06** — Commentaires | **Edoardo** | `GET` / `POST /api/tickets/:id/comments` (droits, RG7) · fil de commentaires minimal sur le détail ticket | 3 |
+| US                                  | Responsable  | Contenu de bout en bout                                                                                                                                | Pts |
+| ----------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
+| **US01** — Inscription et connexion | **Valentin** | Hash du mot de passe (hook `User`), routes `register` / `login` / `me`, génération du JWT · pages Login / Register, `AuthContext` (token, déconnexion) | 5   |
+| **US09** — Protection par rôle      | **Edoardo**  | Middlewares `auth` (vérif. JWT, compte actif) et `requireRole` · composant de route protégée côté React, redirections selon le rôle                    | 3   |
+| **US02** — Déclarer un incident     | **Edoardo**  | `POST /api/tickets` (validation, numéro `HD-XXXX`, `priorityRank`, historique « created ») · formulaire Nouveau ticket                                 | 3   |
+| **US05** — Statut et assignation    | **Valentin** | `PATCH /status` et `/assign` (transitions RG3, auto-assignation RG4, historique RG5, dates de suivi) · boutons d'action minimaux sur le détail ticket  | 3   |
+| **US06** — Commentaires             | **Edoardo**  | `GET` / `POST /api/tickets/:id/comments` (droits, RG7) · fil de commentaires minimal sur le détail ticket                                              | 3   |
 
 **Charge restante :** Valentin 3 (TECH-10) + 3 (TECH-11) + 5 (US01) + 3 (US05) + 1 (TECH-14) + 1 (TECH-15) = **16 pts** · Edoardo 2 (TECH-12) + 3 (US09) + 3 (US02) + 3 (US06) + 2 (TECH-13) = **13 pts**.
 
 **Ordre et dépendances**
 
-| Étape | Valentin | Edoardo |
-|-------|----------|---------|
-| 1 | TECH-10 puis TECH-11 (modèles) | TECH-12 (client) |
-| 2 | US01 (dès que `User` existe) | US09 : le middleware s'écrit contre le contrat JWT `{ sub, role }`, sans attendre US01 |
-| 3 | US05 (dès que `Ticket` existe) | US02, puis US06 |
-| 4 | TECH-14 (Postman sur toutes les routes), TECH-15 | TECH-13 (seed : utilise les modèles et le hash de US01) |
+| Étape | Valentin                                         | Edoardo                                                                                |
+| ----- | ------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| 1     | TECH-10 puis TECH-11 (modèles)                   | TECH-12 (client)                                                                       |
+| 2     | US01 (dès que `User` existe)                     | US09 : le middleware s'écrit contre le contrat JWT `{ sub, role }`, sans attendre US01 |
+| 3     | US05 (dès que `Ticket` existe)                   | US02, puis US06                                                                        |
+| 4     | TECH-14 (Postman sur toutes les routes), TECH-15 | TECH-13 (seed : utilise les modèles et le hash de US01)                                |
 
 Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentification, droits et création de ticket restent prioritaires.
 
@@ -127,32 +128,34 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 
 ### Bilan du Sprint 2 (20/11, fin de journée)
 
-| Élément | Responsable | Pts | État |
-|---------|-------------|-----|------|
-| TECH-08 — modélisation de la base de données | Valentin | 3 | ✅ |
-| TECH-09 / TECH-16 — monorepo + Docker | Valentin | 1 + 3 | ✅ PR #37 |
-| TECH-10 — socle serveur Express | Valentin | 3 | ✅ PR #39 |
-| TECH-11 — schémas Mongoose | Valentin | 3 | ✅ PR #40 |
-| TECH-12 — client React | Edoardo | 2 | ✅ PR #44 |
-| TECH-13 — seed | Valentin | 2 | ✅ PR #47 |
-| TECH-14 — collection Postman | Valentin | 1 | ✅ PR #43 |
-| US01 — inscription et connexion | Valentin | 5 | ✅ PR #41 |
-| US21 — identité Opale et design system *(ajoutée en cours de sprint)* | Valentin | 5 | ✅ PR #46 |
-| US02 — déclarer un incident | Valentin | 3 | ✅ PR #48 |
-| US05 — statut et assignation (back + page détail) | Valentin | 3 | ✅ PR #42, #49 |
-| US06 — commentaires | Valentin | 3 | ✅ PR #50 |
-| Audit de fin de sprint (correctifs) | Valentin | — | ✅ PR audit |
-| **US09 — protection des routes par rôle** | Edoardo | 3 | ⚠️ **non livrée** : la branche poussée ne contient aucun commit d'US09 (travail resté en local) ; PR #51 vide et ciblant `main` |
-| TECH-15 — rapport IA du sprint | Valentin | 1 | ⬜ dernier élément du sprint |
+| Élément                                                               | Responsable | Pts   | État                                                                                                                            |
+| --------------------------------------------------------------------- | ----------- | ----- | ------------------------------------------------------------------------------------------------------------------------------- |
+| TECH-08 — modélisation de la base de données                          | Valentin    | 3     | ✅                                                                                                                              |
+| TECH-09 / TECH-16 — monorepo + Docker                                 | Valentin    | 1 + 3 | ✅ PR #37                                                                                                                       |
+| TECH-10 — socle serveur Express                                       | Valentin    | 3     | ✅ PR #39                                                                                                                       |
+| TECH-11 — schémas Mongoose                                            | Valentin    | 3     | ✅ PR #40                                                                                                                       |
+| TECH-12 — client React                                                | Edoardo     | 2     | ✅ PR #44                                                                                                                       |
+| TECH-13 — seed                                                        | Valentin    | 2     | ✅ PR #47                                                                                                                       |
+| TECH-14 — collection Postman                                          | Valentin    | 1     | ✅ PR #43                                                                                                                       |
+| US01 — inscription et connexion                                       | Valentin    | 5     | ✅ PR #41                                                                                                                       |
+| US21 — identité Opale et design system _(ajoutée en cours de sprint)_ | Valentin    | 5     | ✅ PR #46                                                                                                                       |
+| US02 — déclarer un incident                                           | Valentin    | 3     | ✅ PR #48                                                                                                                       |
+| US05 — statut et assignation (back + page détail)                     | Valentin    | 3     | ✅ PR #42, #49                                                                                                                  |
+| US06 — commentaires                                                   | Valentin    | 3     | ✅ PR #50                                                                                                                       |
+| Audit de fin de sprint (correctifs)                                   | Valentin    | —     | ✅ PR audit                                                                                                                     |
+| **US09 — protection des routes par rôle**                             | Edoardo     | 3     | ⚠️ **non livrée** : la branche poussée ne contient aucun commit d'US09 (travail resté en local) ; PR #51 vide et ciblant `main` |
+| TECH-15 — rapport IA du sprint                                        | Valentin    | 1     | ⬜ dernier élément du sprint                                                                                                    |
 
 **Vélocité Sprint 2 :** 37 pts livrés sur 41 prévus (US09 et TECH-15 restants).
 
 **Audit de fin de sprint** (relecture du code fusionné, tests automatiques, parcours par rôle) :
+
 - tests : lint, Prettier (code), build, `npm audit` (0 vulnérabilité) ✅ · seed + 9 contrôles transverses (RG1, RG6 sur les 19 tickets, RG7, RG8) ✅ · **collection Postman complète : 39 requêtes, 120 assertions, 0 échec** · parcours demandeur / technicien sur la page détail (notes internes masquées / visibles) ✅
 - **corrigé** : `isInternal: "false"` (chaîne) créait une **note interne** (validation trop permissive) ; doublons possibles dans « messages précédents » après un envoi ; erreur de validation affichée deux fois dans le fil
 - **reste ouvert** : US09 (sans elle, le menu d'un collaborateur montre « File du support » / « Tableau de bord » et ces pages s'ouvrent ; l'API reste protégée par les règles des services)
 
 **Rétrospective**
+
 - ➕ répartition par US full-stack, design system commun dès le Sprint 2, tests systématiques (API, Postman, navigateur) qui ont attrapé plusieurs vrais bugs avant la démo
 - ➖ Docker imposé en cours de sprint (≈ ½ journée) ; deux PR ouvertes vers `main` au lieu de `develop` ; travail non poussé découvert tardivement
 - 🔁 à changer : base `develop` vérifiée à chaque PR ; `git push` + PR ouverte **avant** d'annoncer une tâche finie ; point de synchronisation de mi-journée maintenu
