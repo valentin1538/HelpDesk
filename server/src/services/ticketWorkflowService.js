@@ -42,7 +42,13 @@ export async function changeStatus(ticketId, newStatus, actor) {
   // RG4 — prise en charge automatique
   if (newStatus === 'in_progress' && !ticket.assignedTo && isStaff(actor)) {
     ticket.assignedTo = actor._id;
-    ticket.history.push({ action: 'assigned', from: null, to: String(actor._id), by: actor._id, at: now });
+    ticket.history.push({
+      action: 'assigned',
+      from: null,
+      to: String(actor._id),
+      by: actor._id,
+      at: now,
+    });
   }
 
   // Dates de suivi (statistiques de délais)
@@ -78,7 +84,11 @@ export async function assignTicket(ticketId, assigneeId, actor) {
     }
     // « Prendre en charge » uniquement un ticket libre : réassigner un ticket est le rôle de l'admin
     if (ticket.assignedTo && !ticket.assignedTo.equals(actor._id)) {
-      throw new AppError(409, 'ALREADY_ASSIGNED', 'Ce ticket est déjà pris en charge par un autre technicien');
+      throw new AppError(
+        409,
+        'ALREADY_ASSIGNED',
+        'Ce ticket est déjà pris en charge par un autre technicien',
+      );
     }
   }
 
