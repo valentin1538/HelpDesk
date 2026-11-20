@@ -89,9 +89,9 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | TECH-16 | **Dockerisation** de l'environnement (compose : mongo, server, client) — PR #37 | Valentin | 3 | ✅ |
 | TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`) | Valentin | 3 | ✅ PR #39 |
 | TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ✅ PR #40 |
-| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | 🔄 |
-| TECH-13 | Script de seed (comptes et tickets de démo) | Edoardo | 2 | ⬜ |
-| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | 🔍 PR #43 |
+| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | ✅ PR #44 |
+| TECH-13 | Script de seed (comptes et tickets de démo) | Valentin *(repris)* | 2 | ✅ PR #47 |
+| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ✅ PR #43 |
 | TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
 
 Les tâches techniques restent réparties selon leur nature : **TECH-10 / TECH-11** posent le socle serveur dont dépendent toutes les US, **TECH-12** le socle client. Elles sont faites **en premier, en parallèle**, puis chacun enchaîne sur ses US.
@@ -123,25 +123,39 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 
 **Prolongation (20/11).** La dockerisation de l'environnement (TECH-16), imposée en cours de sprint, et le dépannage de Docker Desktop sous Windows ont consommé environ une demi-journée. Le sprint est prolongé d'un jour plutôt que de sacrifier un Must : les US d'authentification, de droits et de création de ticket restent prioritaires.
 
-**État au 20/11 (après-midi)**
-
-| Élément | Responsable | État |
-|---------|-------------|------|
-| TECH-12 — client React | Edoardo | ✅ PR #44 |
-| US01 — inscription et connexion (back + front) | Valentin | ✅ PR #41 |
-| US21 — identité Opale et design system *(US ajoutée en cours de sprint)* | Valentin | ✅ PR #46 |
-| US05 — back (statut, assignation, verrou optimiste) | Valentin | 🔍 PR #42 |
-| TECH-14 — collection Postman | Valentin | 🔍 PR #43 |
-| US09 — protection des routes par rôle | Edoardo | 🔄 en cours (plan détaillé fourni) |
-| TECH-13 — seed | **Valentin** | ⬜ |
-| US02 — déclarer un incident | **Valentin** | ⬜ |
-| US05 — front + `GET /api/tickets/:id` (page détail) | Valentin | ⬜ |
-| US06 — commentaires | **Valentin** | ⬜ |
-| TECH-15 — rapport IA du sprint | Valentin | ⬜ |
-
 **Réajustement de la répartition (20/11).** Edoardo concentre son temps sur US09 (première US full-stack de son côté, avec middleware serveur, gardes de routes et navigation filtrée). Pour tenir l'objectif du sprint, Valentin reprend US02, US06 et TECH-13. Pour que chacun puisse expliquer toute l'application en soutenance, chaque PR reste relue par l'autre membre.
 
-**Ordre de réalisation :** TECH-13 (données de démo, utiles pour tester tout le reste) → US02 → US05 front → US06 → TECH-15. Merges : #42 et #43 dès que possible.
+### Bilan du Sprint 2 (20/11, fin de journée)
+
+| Élément | Responsable | Pts | État |
+|---------|-------------|-----|------|
+| TECH-08 — modélisation de la base de données | Valentin | 3 | ✅ |
+| TECH-09 / TECH-16 — monorepo + Docker | Valentin | 1 + 3 | ✅ PR #37 |
+| TECH-10 — socle serveur Express | Valentin | 3 | ✅ PR #39 |
+| TECH-11 — schémas Mongoose | Valentin | 3 | ✅ PR #40 |
+| TECH-12 — client React | Edoardo | 2 | ✅ PR #44 |
+| TECH-13 — seed | Valentin | 2 | ✅ PR #47 |
+| TECH-14 — collection Postman | Valentin | 1 | ✅ PR #43 |
+| US01 — inscription et connexion | Valentin | 5 | ✅ PR #41 |
+| US21 — identité Opale et design system *(ajoutée en cours de sprint)* | Valentin | 5 | ✅ PR #46 |
+| US02 — déclarer un incident | Valentin | 3 | ✅ PR #48 |
+| US05 — statut et assignation (back + page détail) | Valentin | 3 | ✅ PR #42, #49 |
+| US06 — commentaires | Valentin | 3 | ✅ PR #50 |
+| Audit de fin de sprint (correctifs) | Valentin | — | ✅ PR audit |
+| **US09 — protection des routes par rôle** | Edoardo | 3 | ⚠️ **non livrée** : la branche poussée ne contient aucun commit d'US09 (travail resté en local) ; PR #51 vide et ciblant `main` |
+| TECH-15 — rapport IA du sprint | Valentin | 1 | ⬜ dernier élément du sprint |
+
+**Vélocité Sprint 2 :** 37 pts livrés sur 41 prévus (US09 et TECH-15 restants).
+
+**Audit de fin de sprint** (relecture du code fusionné, tests automatiques, parcours par rôle) :
+- tests : lint, Prettier (code), build, `npm audit` (0 vulnérabilité) ✅ · seed + 9 contrôles transverses (RG1, RG6 sur les 19 tickets, RG7, RG8) ✅ · **collection Postman complète : 39 requêtes, 120 assertions, 0 échec** · parcours demandeur / technicien sur la page détail (notes internes masquées / visibles) ✅
+- **corrigé** : `isInternal: "false"` (chaîne) créait une **note interne** (validation trop permissive) ; doublons possibles dans « messages précédents » après un envoi ; erreur de validation affichée deux fois dans le fil
+- **reste ouvert** : US09 (sans elle, le menu d'un collaborateur montre « File du support » / « Tableau de bord » et ces pages s'ouvrent ; l'API reste protégée par les règles des services)
+
+**Rétrospective**
+- ➕ répartition par US full-stack, design system commun dès le Sprint 2, tests systématiques (API, Postman, navigateur) qui ont attrapé plusieurs vrais bugs avant la démo
+- ➖ Docker imposé en cours de sprint (≈ ½ journée) ; deux PR ouvertes vers `main` au lieu de `develop` ; travail non poussé découvert tardivement
+- 🔁 à changer : base `develop` vérifiée à chaque PR ; `git push` + PR ouverte **avant** d'annoncer une tâche finie ; point de synchronisation de mi-journée maintenu
 
 > À partir du Sprint 3, les colonnes « back / front » ci-dessous sont indicatives : la répartition se fait par US au sprint planning du jour.
 
