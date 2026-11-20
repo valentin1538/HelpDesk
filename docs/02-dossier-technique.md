@@ -533,6 +533,19 @@ stateDiagram-v2
 | GET     | `/tickets/:id/comments` | propriétaire / staff | Notes internes exclues pour `user`                          |
 | POST    | `/tickets/:id/comments` | propriétaire / staff | `{ content, isInternal }` (`isInternal` ignoré pour `user`) |
 
+**Détail des commentaires (US06)** — `routes/commentRoutes.js` (monté sur `/tickets/:id/comments`, `mergeParams`), règles dans `services/commentService.js`.
+
+| Route                        | Corps / paramètres                  | Succès                                               | Erreurs                                                                                        |
+| ---------------------------- | ----------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| `GET /tickets/:id/comments`  | `?page=1&limit=20` (limit ≤ 50)     | `200 { comments, pagination }`                       | `400` id / pagination invalide · `401` · `404` ticket inexistant **ou d'un autre utilisateur** |
+| `POST /tickets/:id/comments` | `{ content (≤ 5000), isInternal? }` | `201 { comment }` (auteur peuplé : nom, email, rôle) | `400 VALIDATION_ERROR` · `401` · `404` · `409 TICKET_CLOSED` (RG7)                             |
+
+- **RG6 — notes internes** : le filtre est appliqué dans la requête (`isInternal: false`) pour un `user`, pas après coup ; un `user` qui envoie `isInternal: true` voit le champ ignoré (le commentaire reste public). Une note interne est signalée visuellement dans le fil du support.
+- **RG7 — ticket fermé** : plus aucun commentaire n'est accepté (`409 TICKET_CLOSED`), mais le fil reste lisible.
+- **Pagination** : tri `createdAt` décroissant pour que la page 1 contienne les messages les plus récents, puis remise en ordre chronologique avant la réponse ; le client propose « Voir les messages précédents » tant que `page < totalPages`. `total` et `totalPages` portent sur les commentaires **visibles par l'appelant** (une note interne ne compte pas pour un `user`).
+- **404 plutôt que 403** pour un ticket d'un autre utilisateur : réutilisation de `findTicketForUser` (RG1), comme pour le détail et le cycle de vie.
+- **Côté client** (`components/tickets/CommentThread.jsx`) : le formulaire est remplacé par un message quand le ticket est fermé, et la case « Note interne » n'est proposée qu'au support. Le serveur reste la référence.
+
 ### Utilisateurs (admin)
 
 | Méthode | Route        | Accès                                                         | Description          |

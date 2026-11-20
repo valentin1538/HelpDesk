@@ -831,3 +831,96 @@
     order: -1;
   }
 }
+
+/* =====================================================================
+   Discussion du ticket (US06) — fil de commentaires
+   ===================================================================== */
+.comments {
+  display: grid;
+  gap: var(--space-4);
+}
+.comment-skeleton {
+  display: grid;
+  gap: var(--space-3);
+}
+.comment-list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.comment {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.comment-content {
+  flex: 1;
+  min-width: 0;
+}
+.comment-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.comment-author {
+  font-weight: 600;
+}
+.comment-role,
+.comment-time {
+  font-size: var(--text-xs);
+  color: var(--color-text-tertiary);
+}
+.comment-time {
+  margin-left: auto;
+}
+.comment-body {
+  margin: var(--space-1) 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+/* Note interne : repère visuel fort, elle ne sort jamais de l'équipe support (RG6) */
+.comment-internal .comment-content {
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent-soft);
+}
+.comment-more {
+  display: flex;
+  justify-content: center;
+}
+.comment-form {
+  display: grid;
+  gap: var(--space-3);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+.comment-options {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.comment-options input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--color-accent);
+}
+.comment-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.comment-closed {
+  margin: 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
