@@ -37,6 +37,15 @@ function normalize(err) {
     return new AppError(400, 'VALIDATION_ERROR', 'Données invalides', details);
   }
 
+  // Modification concurrente d'un même document (verrou optimiste)
+  if (err instanceof mongoose.Error.VersionError) {
+    return new AppError(
+      409,
+      'CONCURRENT_UPDATE',
+      "Ce ticket vient d'être modifié par quelqu'un d'autre, rechargez-le",
+    );
+  }
+
   // ObjectId mal formé dans l'URL (ex. /api/tickets/abc)
   if (err instanceof mongoose.Error.CastError) {
     return new AppError(400, 'INVALID_ID', `Identifiant invalide : ${err.value}`);

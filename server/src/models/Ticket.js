@@ -64,6 +64,9 @@ const ticketSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    // Verrou optimiste : si deux personnes modifient le même ticket en même temps,
+    // la seconde sauvegarde échoue (VersionError → 409) au lieu d'écraser la première.
+    optimisticConcurrency: true,
     toJSON: {
       virtuals: true,
       transform(doc, ret) {
