@@ -282,6 +282,31 @@ pm.collectionVariables.set('ticketId', ticket._id);`,
       name: '03 — Cycle de vie du ticket (US05)',
       description: 'Utilise le ticket créé par le dossier 02.',
       item: [
+        req('Détail du ticket — sans token → 401', {
+          path: '/tickets/{{ticketId}}',
+          tests: expectError(401, 'UNAUTHORIZED'),
+        }),
+        req('Détail du ticket — identifiant invalide → 400', {
+          path: '/tickets/abc',
+          auth: 'userToken',
+          tests: expectError(400, 'VALIDATION_ERROR'),
+        }),
+        req('Détail du ticket (demandeur)', {
+          path: '/tickets/{{ticketId}}',
+          auth: 'userToken',
+          tests: `const { ticket, people } = pm.response.json();
+pm.test('200 + ticket + people', () => {
+  pm.response.to.have.status(200);
+  pm.expect(ticket._id).to.eql(pm.collectionVariables.get('ticketId'));
+  pm.expect(people).to.be.an('object');
+});
+pm.test('Demandeur renvoyé sans mot de passe', () => pm.expect(ticket.createdBy).to.not.have.property('password'));`,
+        }),
+        req('Détail du ticket (technicien)', {
+          path: '/tickets/{{ticketId}}',
+          auth: 'techToken',
+          tests: `pm.test('Le support voit tous les tickets (RG1) → 200', () => pm.response.to.have.status(200));`,
+        }),
         req("L'auteur ne peut pas passer son ticket en cours → 403 (RG2)", {
           method: 'PATCH',
           path: '/tickets/{{ticketId}}/status',

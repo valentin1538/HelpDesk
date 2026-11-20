@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import * as controller from '../controllers/ticketController.js';
 import { authenticate } from '../middlewares/auth.js';
 import { validate } from '../middlewares/validate.js';
@@ -32,5 +32,14 @@ const createRules = [
 
 // US02 — déclarer un incident (tout utilisateur connecté)
 router.post('/', authenticate, createRules, validate, controller.create);
+
+// US05 — détail d'un ticket (RG1 appliquée dans le service : 404 si ticket d'un autre utilisateur)
+router.get(
+  '/:id',
+  authenticate,
+  param('id').isMongoId().withMessage('Identifiant de ticket invalide'),
+  validate,
+  controller.getOne,
+);
 
 export default router;
