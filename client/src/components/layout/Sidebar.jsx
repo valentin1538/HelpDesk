@@ -9,7 +9,12 @@ import Button from '../ui/Button.jsx';
 
 /** Barre latérale : marque, navigation par groupes, carte de l'utilisateur connecté. */
 export default function Sidebar({ open, onClose, onLogout }) {
-  const { user, status } = useAuth();
+  const { user } = useAuth();
+  // US09 — n'afficher que les liens autorisés pour le rôle (groupes vides masqués)
+  const visibleGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => !item.roles || item.roles.includes(user?.role)),
+  })).filter((group) => group.items.length > 0);
 
   return (
     <aside id="sidebar" className="sidebar" data-open={open} aria-label="Navigation principale">
@@ -29,7 +34,7 @@ export default function Sidebar({ open, onClose, onLogout }) {
       </div>
 
       <nav className="sidebar-nav">
-        {NAV_GROUPS.map((group) => (
+        {visibleGroups.map((group) => (
           <div key={group.label}>
             <div className="nav-group-label">{group.label}</div>
             <ul className="nav-list">
