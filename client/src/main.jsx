@@ -1,15 +1,15 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router';
-import App from './App.jsx';
-import AuthProvider from './context/AuthProvider.jsx';
-import '@fontsource-variable/inter';
-import './styles/tokens.css';
-import './styles/base.css';
-import './styles/components.css';
-import './styles/layout.css';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
+import App from "./App.jsx";
+import AuthProvider from "./context/AuthProvider.jsx";
+import "@fontsource-variable/inter";
+import "./styles/tokens.css";
+import "./styles/base.css";
+import "./styles/components.css";
+import "./styles/layout.css";
 
-createRoot(document.getElementById('root')).render(
+createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>

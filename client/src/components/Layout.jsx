@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Outlet, useNavigate } from 'react-router';
-import { useAuth } from '../hooks/useAuth.js';
-import Sidebar from './layout/Sidebar.jsx';
-import Topbar from './layout/Topbar.jsx';
+import { useEffect, useState } from "react";
+import { Outlet, useNavigate } from "react-router";
+import { useAuth } from "../hooks/useAuth.js";
+import Sidebar from "./layout/Sidebar.jsx";
+import Topbar from "./layout/Topbar.jsx";
 
 /**
  * Coque de l'application (inspirée de Jira) : barre latérale + barre supérieure + contenu.
@@ -16,14 +16,14 @@ export default function Layout() {
   // Le tiroir se referme au clic sur un lien (Sidebar → onClose), sur le fond, ou avec Échap
   useEffect(() => {
     if (!menuOpen) return undefined;
-    const onKey = (e) => e.key === 'Escape' && setMenuOpen(false);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    const onKey = (e) => e.key === "Escape" && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, [menuOpen]);
 
   function handleLogout() {
     logout();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -31,7 +31,11 @@ export default function Layout() {
       <a className="skip-link" href="#contenu">
         Aller au contenu
       </a>
-      <Sidebar open={menuOpen} onClose={() => setMenuOpen(false)} onLogout={handleLogout} />
+      <Sidebar
+        open={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        onLogout={handleLogout}
+      />
       <div
         className="sidebar-overlay"
         data-open={menuOpen}

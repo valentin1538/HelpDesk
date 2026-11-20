@@ -197,7 +197,7 @@
     transform: translateX(-105%);
     transition: transform var(--duration-slow) var(--ease-out);
   }
-  .sidebar[data-open='true'] {
+  .sidebar[data-open="true"] {
     transform: none;
   }
   .sidebar-close {
@@ -213,7 +213,7 @@
     pointer-events: none;
     transition: opacity var(--duration-base) var(--ease-out);
   }
-  .sidebar-overlay[data-open='true'] {
+  .sidebar-overlay[data-open="true"] {
     opacity: 1;
     pointer-events: auto;
   }
@@ -280,7 +280,7 @@
 /* Fond « opale » : halos colorés flous, en lente dérive */
 .auth-brand::before,
 .auth-brand::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);

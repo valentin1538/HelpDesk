@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId } from "react";
 
 /**
  * Logo Opale : squircle irisé (reflets d'une opale) + anneau « O » + éclat (clarté).
@@ -17,7 +17,14 @@ export function LogoMark({ size = 32, className }) {
       aria-label="Opale"
     >
       <defs>
-        <linearGradient id={`${id}g`} x1="6" y1="2" x2="60" y2="62" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id={`${id}g`}
+          x1="6"
+          y1="2"
+          x2="60"
+          y2="62"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop offset="0" stopColor="#8FD3FE" />
           <stop offset=".52" stopColor="#A99BFB" />
           <stop offset="1" stopColor="#F3A7D6" />

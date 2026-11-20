@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axios from "axios";
 
-export const TOKEN_KEY = 'helpdesk_token';
+export const TOKEN_KEY = "helpdesk_token";
 
-const http = axios.create({ baseURL: '/api' });
+const http = axios.create({ baseURL: "/api" });
 
 http.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
@@ -15,10 +15,13 @@ http.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && localStorage.getItem(TOKEN_KEY)) {
       localStorage.removeItem(TOKEN_KEY);
-      window.location.assign('/login');
+      window.location.assign("/login");
     }
     return Promise.reject(
-      error.response?.data?.error ?? { code: 'NETWORK_ERROR', message: 'Serveur injoignable' },
+      error.response?.data?.error ?? {
+        code: "NETWORK_ERROR",
+        message: "Serveur injoignable",
+      },
     );
   },
 );

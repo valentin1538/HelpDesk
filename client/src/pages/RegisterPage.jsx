@@ -1,13 +1,19 @@
-import { useState } from 'react';
-import { CircleAlert } from 'lucide-react';
-import { Link, Navigate, useNavigate } from 'react-router';
-import FormField from '../components/FormField.jsx';
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import Button from '../components/ui/Button.jsx';
-import { homePathFor } from '../context/AuthContext.js';
-import { useAuth } from '../hooks/useAuth.js';
+import { useState } from "react";
+import { CircleAlert } from "lucide-react";
+import { Link, Navigate, useNavigate } from "react-router";
+import FormField from "../components/FormField.jsx";
+import AuthLayout from "../components/layout/AuthLayout.jsx";
+import Button from "../components/ui/Button.jsx";
+import { homePathFor } from "../context/AuthContext.js";
+import { useAuth } from "../hooks/useAuth.js";
 
-const EMPTY = { firstName: '', lastName: '', email: '', department: '', password: '' };
+const EMPTY = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  department: "",
+  password: "",
+};
 
 export default function RegisterPage() {
   const { register, user, status } = useAuth();
@@ -16,7 +22,8 @@ export default function RegisterPage() {
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  if (status === 'authenticated') return <Navigate to={homePathFor(user.role)} replace />;
+  if (status === "authenticated")
+    return <Navigate to={homePathFor(user.role)} replace />;
 
   const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -56,7 +63,7 @@ export default function RegisterPage() {
             autoComplete="given-name"
             value={form.firstName}
             onChange={update}
-            error={fieldError('firstName')}
+            error={fieldError("firstName")}
             required
             autoFocus
           />
@@ -66,7 +73,7 @@ export default function RegisterPage() {
             autoComplete="family-name"
             value={form.lastName}
             onChange={update}
-            error={fieldError('lastName')}
+            error={fieldError("lastName")}
             required
           />
         </div>
@@ -78,7 +85,7 @@ export default function RegisterPage() {
           placeholder="prenom.nom@entreprise.fr"
           value={form.email}
           onChange={update}
-          error={fieldError('email')}
+          error={fieldError("email")}
           required
         />
         <FormField
@@ -88,7 +95,7 @@ export default function RegisterPage() {
           placeholder="ex. Comptabilité"
           value={form.department}
           onChange={update}
-          error={fieldError('department')}
+          error={fieldError("department")}
         />
         <FormField
           label="Mot de passe"
@@ -97,13 +104,13 @@ export default function RegisterPage() {
           autoComplete="new-password"
           value={form.password}
           onChange={update}
-          error={fieldError('password')}
+          error={fieldError("password")}
           hint="Au moins 8 caractères, dont une lettre et un chiffre"
           required
         />
 
         <Button type="submit" size="lg" block loading={submitting}>
-          {submitting ? 'Création du compte…' : 'Créer mon compte'}
+          {submitting ? "Création du compte…" : "Créer mon compte"}
         </Button>
       </form>
 

@@ -1,14 +1,21 @@
-import { CircleCheckBig, Clock3, Inbox, LoaderCircle, PieChart, Users } from 'lucide-react';
-import Badge from '../components/ui/Badge.jsx';
-import Card from '../components/ui/Card.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import PageHeader from '../components/ui/PageHeader.jsx';
+import {
+  CircleCheckBig,
+  Clock3,
+  Inbox,
+  LoaderCircle,
+  PieChart,
+  Users,
+} from "lucide-react";
+import Badge from "../components/ui/Badge.jsx";
+import Card from "../components/ui/Card.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import PageHeader from "../components/ui/PageHeader.jsx";
 
 const KPIS = [
-  { label: 'Tickets ouverts', icon: Inbox },
-  { label: 'En cours', icon: LoaderCircle },
-  { label: 'Résolus ce mois', icon: CircleCheckBig },
-  { label: 'Délai moyen de résolution', icon: Clock3 },
+  { label: "Tickets ouverts", icon: Inbox },
+  { label: "En cours", icon: LoaderCircle },
+  { label: "Résolus ce mois", icon: CircleCheckBig },
+  { label: "Délai moyen de résolution", icon: Clock3 },
 ];
 
 // Tableau de bord : US10 (Aggregation Pipeline). Mise en page « bento » des maquettes.

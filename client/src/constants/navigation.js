@@ -1,4 +1,10 @@
-import { Inbox, LayoutDashboard, ListChecks, Palette, PlusCircle } from 'lucide-react';
+import {
+  Inbox,
+  LayoutDashboard,
+  ListChecks,
+  Palette,
+  PlusCircle,
+} from "lucide-react";
 
 /**
  * Navigation de la barre latérale, par groupes (inspiré de Jira).
@@ -7,28 +13,33 @@ import { Inbox, LayoutDashboard, ListChecks, Palette, PlusCircle } from 'lucide-
  */
 export const NAV_GROUPS = Object.freeze([
   {
-    label: 'Mon espace',
+    label: "Mon espace",
     items: [
-      { to: '/tickets', label: 'Mes tickets', icon: Inbox, end: true },
-      { to: '/tickets/new', label: 'Nouveau ticket', icon: PlusCircle },
+      { to: "/tickets", label: "Mes tickets", icon: Inbox, end: true },
+      { to: "/tickets/new", label: "Nouveau ticket", icon: PlusCircle },
     ],
   },
   {
-    label: 'Support',
+    label: "Support",
     items: [
       {
-        to: '/queue',
-        label: 'File du support',
+        to: "/queue",
+        label: "File du support",
         icon: ListChecks,
-        roles: ['technician', 'admin'],
+        roles: ["technician", "admin"],
       },
     ],
   },
   {
-    label: 'Pilotage',
+    label: "Pilotage",
     items: [
-      { to: '/admin', label: 'Tableau de bord', icon: LayoutDashboard, roles: ['admin'] },
-      { to: '/styleguide', label: 'Guide de style', icon: Palette },
+      {
+        to: "/admin",
+        label: "Tableau de bord",
+        icon: LayoutDashboard,
+        roles: ["admin"],
+      },
+      { to: "/styleguide", label: "Guide de style", icon: Palette },
     ],
   },
 ]);

@@ -2,7 +2,13 @@
  * État vide : quand une liste n'a pas encore de contenu.
  * Explique la situation et propose l'action suivante (bonne pratique UX : jamais d'écran « mort »).
  */
-export default function EmptyState({ icon: Icon, title, description, action, children }) {
+export default function EmptyState({
+  icon: Icon,
+  title,
+  description,
+  action,
+  children,
+}) {
   return (
     <div className="empty-state">
       {Icon && (

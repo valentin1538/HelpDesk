@@ -4,30 +4,30 @@
  */
 
 export const ROLE_LABELS = Object.freeze({
-  user: 'Collaborateur',
-  technician: 'Technicien',
-  admin: 'Administrateur',
+  user: "Collaborateur",
+  technician: "Technicien",
+  admin: "Administrateur",
 });
 
 export const STATUS_LABELS = Object.freeze({
-  open: 'Ouvert',
-  in_progress: 'En cours',
-  waiting_user: 'En attente',
-  resolved: 'Résolu',
-  closed: 'Fermé',
+  open: "Ouvert",
+  in_progress: "En cours",
+  waiting_user: "En attente",
+  resolved: "Résolu",
+  closed: "Fermé",
 });
 
 export const PRIORITY_LABELS = Object.freeze({
-  low: 'Basse',
-  medium: 'Moyenne',
-  high: 'Haute',
-  critical: 'Critique',
+  low: "Basse",
+  medium: "Moyenne",
+  high: "Haute",
+  critical: "Critique",
 });
 
 export const CATEGORY_LABELS = Object.freeze({
-  hardware: 'Matériel',
-  software: 'Logiciel',
-  network: 'Réseau',
-  access: 'Accès',
-  other: 'Autre',
+  hardware: "Matériel",
+  software: "Logiciel",
+  network: "Réseau",
+  access: "Accès",
+  other: "Autre",
 });

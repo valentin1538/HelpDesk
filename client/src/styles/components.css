@@ -33,7 +33,7 @@
   transform: scale(0.98);
 }
 .btn:disabled,
-.btn[aria-disabled='true'] {
+.btn[aria-disabled="true"] {
   opacity: 0.55;
   cursor: not-allowed;
 }
@@ -167,10 +167,10 @@
   border-color: var(--color-accent);
   box-shadow: 0 0 0 4px var(--color-accent-soft);
 }
-.field [aria-invalid='true'] {
+.field [aria-invalid="true"] {
   border-color: var(--color-danger);
 }
-.field [aria-invalid='true']:focus {
+.field [aria-invalid="true"]:focus {
   box-shadow: 0 0 0 4px var(--color-danger-soft);
 }
 .field-error {
@@ -218,7 +218,7 @@
   color: var(--badge-text, var(--color-text-secondary));
 }
 .badge-dot::before {
-  content: '';
+  content: "";
   width: 6px;
   height: 6px;
   border-radius: 50%;

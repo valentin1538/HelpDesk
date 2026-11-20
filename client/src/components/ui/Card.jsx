@@ -1,17 +1,17 @@
 /** Carte : surface blanche arrondie à ombre douce. */
 export default function Card({
-  as: Component = 'section',
+  as: Component = "section",
   title,
   actions,
   interactive = false,
-  className = '',
-  bodyClassName = '',
+  className = "",
+  bodyClassName = "",
   children,
   ...props
 }) {
   return (
     <Component
-      className={`card${interactive ? ' card-interactive' : ''} ${className}`.trim()}
+      className={`card${interactive ? " card-interactive" : ""} ${className}`.trim()}
       {...props}
     >
       {(title || actions) && (

@@ -1,9 +1,9 @@
-import { Inbox, Plus } from 'lucide-react';
-import { Link } from 'react-router';
-import Button from '../components/ui/Button.jsx';
-import Card from '../components/ui/Card.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import PageHeader from '../components/ui/PageHeader.jsx';
+import { Inbox, Plus } from "lucide-react";
+import { Link } from "react-router";
+import Button from "../components/ui/Button.jsx";
+import Card from "../components/ui/Card.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import PageHeader from "../components/ui/PageHeader.jsx";
 
 // Liste des tickets : US03
 export default function MyTicketsPage() {

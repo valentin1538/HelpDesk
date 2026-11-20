@@ -1,4 +1,4 @@
-import Spinner from './Spinner.jsx';
+import Spinner from "./Spinner.jsx";
 
 /**
  * Bouton du design system.
@@ -9,41 +9,48 @@ import Spinner from './Spinner.jsx';
  *   loading : affiche un indicateur et désactive le bouton
  */
 export default function Button({
-  as: Component = 'button',
-  variant = 'primary',
-  size = 'md',
+  as: Component = "button",
+  variant = "primary",
+  size = "md",
   icon: Icon,
   iconOnly = false,
   block = false,
   loading = false,
   disabled,
-  className = '',
+  className = "",
   children,
   ...props
 }) {
   const classes = [
-    'btn',
+    "btn",
     `btn-${variant}`,
-    size !== 'md' && `btn-${size}`,
-    block && 'btn-block',
-    iconOnly && 'btn-icon',
+    size !== "md" && `btn-${size}`,
+    block && "btn-block",
+    iconOnly && "btn-icon",
     className,
   ]
     .filter(Boolean)
-    .join(' ');
+    .join(" ");
 
-  const isButton = Component === 'button';
-  const iconSize = size === 'sm' ? 16 : 18;
+  const isButton = Component === "button";
+  const iconSize = size === "sm" ? 16 : 18;
 
   return (
     <Component
       className={classes}
-      {...(isButton && { type: props.type ?? 'button', disabled: disabled || loading })}
-      {...(!isButton && (disabled || loading) && { 'aria-disabled': true })}
+      {...(isButton && {
+        type: props.type ?? "button",
+        disabled: disabled || loading,
+      })}
+      {...(!isButton && (disabled || loading) && { "aria-disabled": true })}
       aria-busy={loading || undefined}
       {...props}
     >
-      {loading ? <Spinner /> : Icon && <Icon size={iconSize} strokeWidth={2} aria-hidden="true" />}
+      {loading ? (
+        <Spinner />
+      ) : (
+        Icon && <Icon size={iconSize} strokeWidth={2} aria-hidden="true" />
+      )}
       {children}
     </Component>
   );

@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext } from "react";
 
 /**
  * Contexte d'authentification (US01). Valeur fournie par <AuthProvider> :
@@ -10,9 +10,9 @@ export const AuthContext = createContext(null);
 
 /** Page d'accueil selon le rôle, après connexion. */
 export const HOME_BY_ROLE = Object.freeze({
-  user: '/tickets',
-  technician: '/queue',
-  admin: '/admin',
+  user: "/tickets",
+  technician: "/queue",
+  admin: "/admin",
 });
 
-export const homePathFor = (role) => HOME_BY_ROLE[role] ?? '/tickets';
+export const homePathFor = (role) => HOME_BY_ROLE[role] ?? "/tickets";

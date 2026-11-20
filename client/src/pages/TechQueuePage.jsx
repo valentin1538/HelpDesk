@@ -1,8 +1,8 @@
-import { ListChecks } from 'lucide-react';
-import Badge from '../components/ui/Badge.jsx';
-import Card from '../components/ui/Card.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import PageHeader from '../components/ui/PageHeader.jsx';
+import { ListChecks } from "lucide-react";
+import Badge from "../components/ui/Badge.jsx";
+import Card from "../components/ui/Card.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import PageHeader from "../components/ui/PageHeader.jsx";
 
 // File des tickets du support : US04
 export default function TechQueuePage() {

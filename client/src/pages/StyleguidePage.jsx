@@ -1,34 +1,39 @@
-import { Inbox, Plus, Send, Trash2 } from 'lucide-react';
-import FormField from '../components/FormField.jsx';
-import Logo, { LogoMark } from '../components/brand/Logo.jsx';
-import PriorityBadge from '../components/tickets/PriorityBadge.jsx';
-import StatusBadge from '../components/tickets/StatusBadge.jsx';
-import Avatar from '../components/ui/Avatar.jsx';
-import Badge from '../components/ui/Badge.jsx';
-import Button from '../components/ui/Button.jsx';
-import Card from '../components/ui/Card.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import PageHeader from '../components/ui/PageHeader.jsx';
+import { Inbox, Plus, Send, Trash2 } from "lucide-react";
+import FormField from "../components/FormField.jsx";
+import Logo, { LogoMark } from "../components/brand/Logo.jsx";
+import PriorityBadge from "../components/tickets/PriorityBadge.jsx";
+import StatusBadge from "../components/tickets/StatusBadge.jsx";
+import Avatar from "../components/ui/Avatar.jsx";
+import Badge from "../components/ui/Badge.jsx";
+import Button from "../components/ui/Button.jsx";
+import Card from "../components/ui/Card.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import PageHeader from "../components/ui/PageHeader.jsx";
 
 const COLORS = [
-  ['Fond', '--color-bg'],
-  ['Surface', '--color-surface'],
-  ['Texte', '--color-text'],
-  ['Texte secondaire', '--color-text-secondary'],
-  ['Accent Opale', '--color-accent'],
-  ['Danger', '--color-danger'],
+  ["Fond", "--color-bg"],
+  ["Surface", "--color-surface"],
+  ["Texte", "--color-text"],
+  ["Texte secondaire", "--color-text-secondary"],
+  ["Accent Opale", "--color-accent"],
+  ["Danger", "--color-danger"],
 ];
-const STATUSES = ['open', 'in_progress', 'waiting_user', 'resolved', 'closed'];
-const PRIORITIES = ['low', 'medium', 'high', 'critical'];
+const STATUSES = ["open", "in_progress", "waiting_user", "resolved", "closed"];
+const PRIORITIES = ["low", "medium", "high", "critical"];
 const TYPE_SCALE = [
-  ['Titre de page', 'var(--text-2xl)', 620],
-  ['Titre de section', 'var(--text-lg)', 620],
-  ['Texte courant', 'var(--text-base)', 420],
-  ['Légende', 'var(--text-sm)', 420],
+  ["Titre de page", "var(--text-2xl)", 620],
+  ["Titre de section", "var(--text-lg)", 620],
+  ["Texte courant", "var(--text-base)", 420],
+  ["Légende", "var(--text-sm)", 420],
 ];
 
-const grid = { display: 'grid', gap: 16 };
-const row = { display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' };
+const grid = { display: "grid", gap: 16 };
+const row = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: 12,
+  alignItems: "center",
+};
 
 /** Guide de style vivant : la charte graphique appliquée aux vrais composants. */
 export default function StyleguidePage() {
@@ -46,7 +51,10 @@ export default function StyleguidePage() {
             <Logo size={48} subtitle="Service desk" />
             <LogoMark size={64} />
             <LogoMark size={32} />
-            <p className="text-gradient" style={{ fontSize: 34, fontWeight: 620 }}>
+            <p
+              className="text-gradient"
+              style={{ fontSize: 34, fontWeight: 620 }}
+            >
               Le support IT, tout en clarté.
             </p>
           </div>
@@ -55,9 +63,9 @@ export default function StyleguidePage() {
         <Card title="Couleurs">
           <div
             style={{
-              display: 'grid',
+              display: "grid",
               gap: 12,
-              gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))',
+              gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
             }}
           >
             {COLORS.map(([name, token]) => (
@@ -67,7 +75,7 @@ export default function StyleguidePage() {
                     height: 64,
                     borderRadius: 12,
                     background: `var(${token})`,
-                    border: '1px solid var(--color-border)',
+                    border: "1px solid var(--color-border)",
                   }}
                 />
                 <div style={{ marginTop: 8, fontWeight: 520 }}>{name}</div>
@@ -77,7 +85,13 @@ export default function StyleguidePage() {
               </div>
             ))}
             <div>
-              <div style={{ height: 64, borderRadius: 12, background: 'var(--gradient-opale)' }} />
+              <div
+                style={{
+                  height: 64,
+                  borderRadius: 12,
+                  background: "var(--gradient-opale)",
+                }}
+              />
               <div style={{ marginTop: 8, fontWeight: 520 }}>Dégradé Opale</div>
               <code className="text-secondary" style={{ fontSize: 12 }}>
                 --gradient-opale
@@ -89,8 +103,17 @@ export default function StyleguidePage() {
         <Card title="Typographie — Inter">
           <div style={grid}>
             {TYPE_SCALE.map(([label, size, weight]) => (
-              <div key={label} style={{ ...row, justifyContent: 'space-between' }}>
-                <span style={{ fontSize: size, fontWeight: weight, letterSpacing: '-0.02em' }}>
+              <div
+                key={label}
+                style={{ ...row, justifyContent: "space-between" }}
+              >
+                <span
+                  style={{
+                    fontSize: size,
+                    fontWeight: weight,
+                    letterSpacing: "-0.02em",
+                  }}
+                >
                   {label}
                 </span>
                 <code className="text-secondary" style={{ fontSize: 12 }}>
@@ -118,7 +141,12 @@ export default function StyleguidePage() {
                 Petit
               </Button>
               <Button size="lg">Grand</Button>
-              <Button variant="secondary" iconOnly icon={Plus} aria-label="Ajouter" />
+              <Button
+                variant="secondary"
+                iconOnly
+                icon={Plus}
+                aria-label="Ajouter"
+              />
             </div>
           </div>
         </Card>
@@ -145,7 +173,11 @@ export default function StyleguidePage() {
 
         <Card title="Champs de formulaire">
           <div className="field-row">
-            <FormField label="Titre" name="sg-title" placeholder="Imprimante 2e étage HS" />
+            <FormField
+              label="Titre"
+              name="sg-title"
+              placeholder="Imprimante 2e étage HS"
+            />
             <FormField
               label="Email"
               name="sg-email"

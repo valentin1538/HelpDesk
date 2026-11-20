@@ -1,8 +1,8 @@
-import { LogIn, Menu, Plus, Search } from 'lucide-react';
-import { Link } from 'react-router';
-import { useAuth } from '../../hooks/useAuth.js';
-import Logo from '../brand/Logo.jsx';
-import Button from '../ui/Button.jsx';
+import { LogIn, Menu, Plus, Search } from "lucide-react";
+import { Link } from "react-router";
+import { useAuth } from "../../hooks/useAuth.js";
+import Logo from "../brand/Logo.jsx";
+import Button from "../ui/Button.jsx";
 
 /** Barre supérieure : menu (mobile), recherche (US20, à venir), action principale « Créer ». */
 export default function Topbar({ onOpenMenu, menuOpen }) {
@@ -35,8 +35,14 @@ export default function Topbar({ onOpenMenu, menuOpen }) {
       </div>
 
       <div className="topbar-actions">
-        {status === 'anonymous' ? (
-          <Button as={Link} to="/login" variant="secondary" size="sm" icon={LogIn}>
+        {status === "anonymous" ? (
+          <Button
+            as={Link}
+            to="/login"
+            variant="secondary"
+            size="sm"
+            icon={LogIn}
+          >
             Se connecter
           </Button>
         ) : (

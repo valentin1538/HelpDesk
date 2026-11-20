@@ -1,7 +1,11 @@
 /** Indicateur de chargement. `large` pour le chargement d'une page entière. */
-export default function Spinner({ large = false, label = 'Chargement' }) {
+export default function Spinner({ large = false, label = "Chargement" }) {
   return (
-    <span className={`spinner${large ? ' spinner-lg' : ''}`} role="status" aria-label={label} />
+    <span
+      className={`spinner${large ? " spinner-lg" : ""}`}
+      role="status"
+      aria-label={label}
+    />
   );
 }
 

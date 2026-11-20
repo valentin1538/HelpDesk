@@ -1,4 +1,4 @@
-import { CircleAlert } from 'lucide-react';
+import { CircleAlert } from "lucide-react";
 
 /** Champ de formulaire avec libellé et message d'erreur (renvoyé par l'API dans error.details). */
 export default function FormField({ label, name, error, hint, ...inputProps }) {

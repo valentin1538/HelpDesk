@@ -1,9 +1,9 @@
-import { ChevronRight, FilePlus2 } from 'lucide-react';
-import { Link } from 'react-router';
-import Badge from '../components/ui/Badge.jsx';
-import Card from '../components/ui/Card.jsx';
-import EmptyState from '../components/ui/EmptyState.jsx';
-import PageHeader from '../components/ui/PageHeader.jsx';
+import { ChevronRight, FilePlus2 } from "lucide-react";
+import { Link } from "react-router";
+import Badge from "../components/ui/Badge.jsx";
+import Card from "../components/ui/Card.jsx";
+import EmptyState from "../components/ui/EmptyState.jsx";
+import PageHeader from "../components/ui/PageHeader.jsx";
 
 // Formulaire de création : US02
 export default function NewTicketPage() {

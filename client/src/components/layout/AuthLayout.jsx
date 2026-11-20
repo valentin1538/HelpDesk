@@ -1,10 +1,10 @@
-import { MessagesSquare, Radio, Zap } from 'lucide-react';
-import Logo from '../brand/Logo.jsx';
+import { MessagesSquare, Radio, Zap } from "lucide-react";
+import Logo from "../brand/Logo.jsx";
 
 const FEATURES = [
-  { icon: Zap, text: 'Déclarez un incident en moins d’une minute' },
-  { icon: Radio, text: 'Suivez son avancement en temps réel' },
-  { icon: MessagesSquare, text: 'Échangez avec le support au même endroit' },
+  { icon: Zap, text: "Déclarez un incident en moins d’une minute" },
+  { icon: Radio, text: "Suivez son avancement en temps réel" },
+  { icon: MessagesSquare, text: "Échangez avec le support au même endroit" },
 ];
 
 /** Écrans de connexion / inscription : panneau de marque (gauche) + formulaire (droite). */
@@ -16,8 +16,8 @@ export default function AuthLayout({ title, subtitle, children }) {
         <div>
           <p className="auth-brand-title">Le support IT, tout en clarté.</p>
           <p className="auth-brand-text">
-            Une seule place pour déclarer, suivre et résoudre les incidents informatiques de
-            l’entreprise.
+            Une seule place pour déclarer, suivre et résoudre les incidents
+            informatiques de l’entreprise.
           </p>
           <ul className="auth-features">
             {FEATURES.map(({ icon: Icon, text }) => (

@@ -1,23 +1,25 @@
-import { useState } from 'react';
-import { CircleAlert } from 'lucide-react';
-import { Link, Navigate, useLocation } from 'react-router';
-import FormField from '../components/FormField.jsx';
-import AuthLayout from '../components/layout/AuthLayout.jsx';
-import Button from '../components/ui/Button.jsx';
-import { homePathFor } from '../context/AuthContext.js';
-import { useAuth } from '../hooks/useAuth.js';
+import { useState } from "react";
+import { CircleAlert } from "lucide-react";
+import { Link, Navigate, useLocation } from "react-router";
+import FormField from "../components/FormField.jsx";
+import AuthLayout from "../components/layout/AuthLayout.jsx";
+import Button from "../components/ui/Button.jsx";
+import { homePathFor } from "../context/AuthContext.js";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function LoginPage() {
   const { login, user, status } = useAuth();
   const location = useLocation();
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
   // Connecté (déjà, ou juste après l'envoi du formulaire) : UNE seule redirection, vers la page
   // demandée avant la connexion (routes protégées, US09) ou, à défaut, l'accueil du rôle.
-  if (status === 'authenticated') {
-    return <Navigate to={location.state?.from ?? homePathFor(user.role)} replace />;
+  if (status === "authenticated") {
+    return (
+      <Navigate to={location.state?.from ?? homePathFor(user.role)} replace />
+    );
   }
 
   const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
@@ -35,7 +37,10 @@ export default function LoginPage() {
   }
 
   return (
-    <AuthLayout title="Bon retour parmi nous" subtitle="Connectez-vous pour suivre vos demandes.">
+    <AuthLayout
+      title="Bon retour parmi nous"
+      subtitle="Connectez-vous pour suivre vos demandes."
+    >
       <form onSubmit={handleSubmit} noValidate>
         {error && !error.details && (
           <p className="alert" role="alert">
@@ -68,7 +73,7 @@ export default function LoginPage() {
         />
 
         <Button type="submit" size="lg" block loading={submitting}>
-          {submitting ? 'Connexion…' : 'Se connecter'}
+          {submitting ? "Connexion…" : "Se connecter"}
         </Button>
       </form>
 
