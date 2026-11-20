@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CircleAlert } from 'lucide-react';
-import { Link, Navigate, useLocation, useNavigate } from 'react-router';
+import { Link, Navigate, useLocation } from 'react-router';
 import FormField from '../components/FormField.jsx';
 import AuthLayout from '../components/layout/AuthLayout.jsx';
 import Button from '../components/ui/Button.jsx';
@@ -9,14 +9,16 @@ import { useAuth } from '../hooks/useAuth.js';
 
 export default function LoginPage() {
   const { login, user, status } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Déjà connecté : pas de raison de rester sur la page de connexion
-  if (status === 'authenticated') return <Navigate to={homePathFor(user.role)} replace />;
+  // Connecté (déjà, ou juste après l'envoi du formulaire) : UNE seule redirection, vers la page
+  // demandée avant la connexion (routes protégées, US09) ou, à défaut, l'accueil du rôle.
+  if (status === 'authenticated') {
+    return <Navigate to={location.state?.from ?? homePathFor(user.role)} replace />;
+  }
 
   const update = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -25,9 +27,7 @@ export default function LoginPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const loggedUser = await login(form.email, form.password);
-      // Retour à la page demandée avant la connexion (routes protégées, US09), sinon accueil du rôle
-      navigate(location.state?.from ?? homePathFor(loggedUser.role), { replace: true });
+      await login(form.email, form.password); // la session ouverte déclenche la redirection ci-dessus
     } catch (err) {
       setError(err);
       setSubmitting(false);
