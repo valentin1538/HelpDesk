@@ -464,6 +464,24 @@ Format d'erreur : `{ "error": { "code": "FORBIDDEN", "message": "..." } }`.
 
 Derrière un reverse proxy en production, activer `app.set('trust proxy', 1)` pour que la limitation se fasse sur l'IP réelle du client.
 
+**Protection par rôle (US09)**
+
+| Côté    | Mécanisme                                                                                                                                       | Comportement                                                                                                                                                                                            |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Serveur | `requireRole(...roles)` (`middlewares/auth.js`), placé **après** `authenticate` : `router.get('/stats', authenticate, requireRole('admin'), …)` | `401` sans utilisateur (même si `authenticate` est oublié), `403 FORBIDDEN` si le rôle n'est pas autorisé ; le rôle vient de `req.user` rechargé par `authenticate` (compte désactivé déjà refusé, RG8) |
+| Client  | `ProtectedRoute` (`components/auth/`) enveloppant les routes dans `App.jsx`                                                                     | session en vérification → chargement ; non connecté → `/login` en mémorisant la page demandée ; rôle insuffisant → page « Accès réservé »                                                               |
+| Client  | `HomeRedirect`                                                                                                                                  | `/` → accueil du rôle (collaborateur `/tickets`, technicien `/queue`, admin `/admin`)                                                                                                                   |
+| Client  | barre latérale                                                                                                                                  | liens filtrés selon `roles` (`constants/navigation.js`), groupes vides masqués                                                                                                                          |
+
+| Route                                                     | Accès                                                                   |
+| --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `/tickets`, `/tickets/new`, `/tickets/:id`, `/styleguide` | tout utilisateur connecté (les données restent filtrées par l'API, RG1) |
+| `/queue`                                                  | technicien, admin                                                       |
+| `/admin`                                                  | admin                                                                   |
+| `/login`, `/register`, URL inconnue (404)                 | public                                                                  |
+
+Les gardes du client améliorent l'expérience ; **la sécurité reste assurée par l'API** (services et `requireRole`), qui ne fait jamais confiance au client.
+
 ### Tickets
 
 | Méthode | Route                 | Accès                                       | Description                                                                                                           |
