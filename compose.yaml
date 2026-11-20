@@ -1,0 +1,53 @@
+# Environnement de développement complet : docker compose up --build
+name: helpdesk
+
+services:
+  # Base MongoDB locale, identique pour tous (alternative : MongoDB Atlas via MONGO_URI)
+  mongo:
+    image: mongo:8
+    ports:
+      - '27017:27017' # accessible depuis l'hôte (MongoDB Compass : mongodb://localhost:27017)
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--quiet', '--eval', "db.adminCommand('ping').ok"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  # API Express + Socket.io
+  server:
+    build: .
+    init: true # transmet proprement SIGTERM (docker stop) au processus Node
+    working_dir: /app/server
+    # nodemon lancé directement (sans npm) : les signaux d'arrêt arrivent à Node sans intermédiaire.
+    # --legacy-watch : scrutation, car les événements de fichiers Windows ne traversent pas les volumes.
+    command: npx nodemon --legacy-watch src/server.js
+    env_file: ./server/.env
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./server:/app/server # code monté : modification sur l'hôte → redémarrage auto
+      - /app/server/node_modules # node_modules restent ceux de l'image (Linux)
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+  # Client React (Vite)
+  client:
+    build: .
+    init: true
+    command: npm run dev -w client -- --host 0.0.0.0
+    environment:
+      API_TARGET: http://server:5000 # le proxy Vite joint l'API par le réseau Docker
+      VITE_USE_POLLING: 'true' # détection des modifications sur un volume Windows
+    ports:
+      - '5173:5173'
+    volumes:
+      - ./client:/app/client
+      - /app/client/node_modules
+    depends_on:
+      - server
+
+volumes:
+  mongo-data:
