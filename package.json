@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "docker:up": "docker compose up --build",
     "docker:down": "docker compose down",
-    "docker:logs": "docker compose logs -f"
+    "docker:logs": "docker compose logs -f",
+    "test:api": "npx -y newman@6 run docs/postman/HelpDesk.postman_collection.json -e docs/postman/HelpDesk-local.postman_environment.json"
   },
   "devDependencies": {
     "concurrently": "^9.2.5",
