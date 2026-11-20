@@ -123,18 +123,25 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 
 **Prolongation (20/11).** La dockerisation de l'environnement (TECH-16), imposée en cours de sprint, et le dépannage de Docker Desktop sous Windows ont consommé environ une demi-journée. Le sprint est prolongé d'un jour plutôt que de sacrifier un Must : les US d'authentification, de droits et de création de ticket restent prioritaires.
 
-**État au 20/11**
+**État au 20/11 (après-midi)**
 
 | Élément | Responsable | État |
 |---------|-------------|------|
-| US01 — back (register, login, me, `authenticate`) | Valentin | 🔍 PR #41 |
-| US01 — front (AuthContext, pages Login / Register) | Valentin | ⏳ attend TECH-12 |
-| US05 — back (statut, assignation, verrou optimiste) | Valentin | 🔍 PR #42 (dépend de #41) |
-| US05 — front (boutons d'action) | Valentin | ⏳ attend TECH-12 |
-| TECH-12 — client React | Edoardo | 🔄 en cours |
-| US09, US02, US06, TECH-13 | Edoardo | ⬜ après TECH-12 ; le back d'US09 / US02 / US06 peut démarrer dès #41 mergée |
+| TECH-12 — client React | Edoardo | ✅ PR #44 |
+| US01 — inscription et connexion (back + front) | Valentin | ✅ PR #41 |
+| US21 — identité Opale et design system *(US ajoutée en cours de sprint)* | Valentin | ✅ PR #46 |
+| US05 — back (statut, assignation, verrou optimiste) | Valentin | 🔍 PR #42 |
+| TECH-14 — collection Postman | Valentin | 🔍 PR #43 |
+| US09 — protection des routes par rôle | Edoardo | 🔄 en cours (plan détaillé fourni) |
+| TECH-13 — seed | **Valentin** | ⬜ |
+| US02 — déclarer un incident | **Valentin** | ⬜ |
+| US05 — front +  (page détail) | Valentin | ⬜ |
+| US06 — commentaires | **Valentin** | ⬜ |
+| TECH-15 — rapport IA du sprint | Valentin | ⬜ |
 
-**Ordre de merge recommandé :** #41 → #42 (rebasée après #41) → #43 → TECH-12 → fronts US01 / US05.
+**Réajustement de la répartition (20/11).** Edoardo concentre son temps sur US09 (première US full-stack de son côté, avec middleware serveur, gardes de routes et navigation filtrée). Pour tenir l'objectif du sprint, Valentin reprend US02, US06 et TECH-13. Pour que chacun puisse expliquer toute l'application en soutenance, chaque PR reste relue par l'autre membre.
+
+**Ordre de réalisation :** TECH-13 (données de démo, utiles pour tester tout le reste) → US02 → US05 front → US06 → TECH-15. Merges : #42 et #43 dès que possible.
 
 > À partir du Sprint 3, les colonnes « back / front » ci-dessous sont indicatives : la répartition se fait par US au sprint planning du jour.
 
