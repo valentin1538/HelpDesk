@@ -485,6 +485,21 @@ Derrière un reverse proxy en production, activer `app.set('trust proxy', 1)` po
 - **Calculé par le serveur** : numéro `HD-XXXX` (compteur atomique, attribué après validation → pas de trou), `priorityRank`, entrée d'historique `created` ; priorité `medium` par défaut.
 - **Côté client** : validation immédiate dans le navigateur (retour sans aller-retour réseau) puis validation serveur, qui fait foi ; catégories et priorités présentées avec un exemple / leur impact pour aider le collaborateur à bien qualifier sa demande (problème P3).
 
+**Détail d'un ticket (US05)** — `GET /tickets/:id` → `200 { ticket, people }` · `400` identifiant invalide · `401` · `404` ticket inexistant **ou d'un autre utilisateur** (RG1, via `findTicketForUser`).
+`people` est un petit annuaire `{ id: { firstName, lastName, role } }` des personnes citées dans l'historique d'assignation (champs `from` / `to` stockés sous forme d'identifiants) : il permet d'afficher « Nathalie a assigné le ticket à Thomas » sans requête supplémentaire côté client.
+
+**Page de détail (client)** — colonne principale (description, discussion US06, historique en frise) + panneau « Gestion » collant (actions, propriétés, dates de suivi). Les actions proposées reprennent les règles du serveur (`client/src/constants/workflow.js`) pour n'afficher que ce qui est possible ; le serveur reste la référence. En cas de conflit (ticket modifié entre-temps : `INVALID_TRANSITION`, `CONCURRENT_UPDATE`…), un message en langage clair et un bouton « Recharger le ticket » sont proposés.
+
+| Statut     | Support (technicien / admin)          | Demandeur                                         |
+| ---------- | ------------------------------------- | ------------------------------------------------- |
+| Ouvert     | **Prendre en charge** (RG4)           | —                                                 |
+| En cours   | **Marquer résolu**, Mettre en attente | —                                                 |
+| En attente | **Reprendre**                         | —                                                 |
+| Résolu     | **Fermer le ticket**, Rouvrir         | **Confirmer la résolution**, Le problème persiste |
+| Fermé      | —                                     | —                                                 |
+
+« M'assigner » est aussi proposé au support quand le ticket n'est pas fermé (technicien : ticket libre ; admin : ticket assigné à un autre). L'assignation à un collègue par l'admin relève d'US11.
+
 **Détail du cycle de vie (US05)** — routes dans `routes/ticketWorkflowRoutes.js`, règles dans `services/ticketWorkflowService.js`.
 
 ```mermaid
