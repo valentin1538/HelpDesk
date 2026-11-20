@@ -1,14 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
-import {
-  ArrowLeft,
-  ChevronRight,
-  CircleAlert,
-  FileSearch,
-  MessagesSquare,
-  RefreshCw,
-} from 'lucide-react';
+import { ArrowLeft, ChevronRight, CircleAlert, FileSearch, RefreshCw } from 'lucide-react';
 import { Link, useParams } from 'react-router';
 import { assignTicket, changeStatus, getTicket } from '../api/tickets.js';
+import CommentThread from '../components/tickets/CommentThread.jsx';
 import PriorityBadge from '../components/tickets/PriorityBadge.jsx';
 import StatusBadge from '../components/tickets/StatusBadge.jsx';
 import TicketHistory from '../components/tickets/TicketHistory.jsx';
@@ -181,13 +175,7 @@ export default function TicketDetailPage() {
           </Card>
 
           <Card title="Discussion">
-            <EmptyState
-              icon={MessagesSquare}
-              title="Les échanges arrivent bientôt"
-              description="Vous pourrez échanger avec le support directement dans le ticket."
-            >
-              <Badge tone="accent">US06</Badge>
-            </EmptyState>
+            <CommentThread key={ticket._id} ticket={ticket} />
           </Card>
 
           <Card title="Historique">
