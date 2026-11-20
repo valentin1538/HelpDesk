@@ -468,6 +468,16 @@ Derrière un reverse proxy en production, activer `app.set('trust proxy', 1)` po
 | PATCH | `/tickets/:id/status` | staff ; user pour `closed` / réouverture | `{ status }` — transitions RG3 |
 | PATCH | `/tickets/:id/assign` | tech (soi-même) / admin | `{ assignedTo }` |
 
+**Détail de la création (US02)** — `routes/ticketRoutes.js`, `services/ticketService.js`.
+
+| Route | Corps | Succès | Erreurs |
+|-------|-------|--------|---------|
+| `POST /tickets` | `{ title (5–120), description (≤ 5000), category, priority? }` | `201 { ticket }` + en-tête `Location: /api/tickets/:id` | `400 VALIDATION_ERROR` (détail par champ) · `401` |
+
+- **Champs protégés** : seuls `title`, `description`, `category`, `priority` sont lus. `status`, `assignedTo`, `createdBy`, `number`, `priorityRank`, `history` et les dates envoyés par le client sont **ignorés** (protection contre l'assignation de masse) : le ticket est toujours créé `open`, non assigné, au nom de l'utilisateur connecté.
+- **Calculé par le serveur** : numéro `HD-XXXX` (compteur atomique, attribué après validation → pas de trou), `priorityRank`, entrée d'historique `created` ; priorité `medium` par défaut.
+- **Côté client** : validation immédiate dans le navigateur (retour sans aller-retour réseau) puis validation serveur, qui fait foi ; catégories et priorités présentées avec un exemple / leur impact pour aider le collaborateur à bien qualifier sa demande (problème P3).
+
 **Détail du cycle de vie (US05)** — routes dans `routes/ticketWorkflowRoutes.js`, règles dans `services/ticketWorkflowService.js`.
 
 ```mermaid

@@ -21,15 +21,16 @@ npm run test:api
 
 ## Contenu
 
-| Dossier                      | Requêtes | Ce qui est vérifié                                                                                                                                                                                                                                  |
-| ---------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 00 — Santé                   | 2        | `/health` (API + base), 404 au format standard                                                                                                                                                                                                      |
-| 01 — Authentification (US01) | 11       | inscription (rôle forcé à `user`, mot de passe jamais renvoyé), doublon 409, validation 400 avec détail par champ, connexion, même 401 pour mauvais mot de passe et email inconnu, `/me` sans token / token falsifié, connexion technicien et admin |
-| 02 — Cycle de vie (US05)     | 8        | création (US02), RG2 403, RG3 409 + transitions autorisées, assignation invalide 400, RG4 auto-assignation + RG5 historique + `firstResponseAt`, résolution, fermeture par l'auteur, ticket fermé 409                                               |
+| Dossier                          | Requêtes | Ce qui est vérifié                                                                                                                                                                                                                                  |
+| -------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 00 — Santé                       | 2        | `/health` (API + base), 404 au format standard                                                                                                                                                                                                      |
+| 01 — Authentification (US01)     | 11       | inscription (rôle forcé à `user`, mot de passe jamais renvoyé), doublon 409, validation 400 avec détail par champ, connexion, même 401 pour mauvais mot de passe et email inconnu, `/me` sans token / token falsifié, connexion technicien et admin |
+| 02 — Déclarer un incident (US02) | 4        | sans token 401, validation 400 avec détail par champ, champs protégés ignorés (statut, assigné, numéro, rang), création 201 + `Location` + référence HD-XXXX + `priorityRank` + historique « created »                                              |
+| 03 — Cycle de vie (US05)         | 7        | RG2 403, RG3 409 + transitions autorisées, assignation invalide 400, RG4 auto-assignation + RG5 historique + `firstResponseAt`, résolution, fermeture par l'auteur, ticket fermé 409                                                                |
 
 Un test commun à toute la collection vérifie que **chaque réponse d'erreur** respecte le format `{ error: { code, message } }`.
 
-**Dernière exécution** : 21 requêtes, 62 assertions, 0 échec (base de test, branches US01 + US05).
+**Dernière exécution** : 24 requêtes, 76 assertions, 0 échec (base de test, branche US02 avec US01 + US05).
 
 ## Ajouter les routes d'une nouvelle US
 
@@ -44,5 +45,3 @@ Chaque US ajoute son dossier (`03 — …`) avec au moins : le cas nominal, un 4
 | `demoPassword`           | `Demo1234`               | seed (TECH-13) |
 
 Le compte utilisateur est créé par la collection elle-même (email unique à chaque exécution).
-
-**Contrat attendu pour US02** : `POST /api/tickets` renvoie `201 { ticket }` (le dossier 02 en dépend).
