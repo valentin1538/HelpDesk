@@ -34,6 +34,12 @@ Renseigner `JWT_SECRET` dans `server/.env` (n'importe quelle longue chaîne), pu
 docker compose up --build             # ou : npm run docker:up
 ```
 
+Dans un second terminal, remplir la base avec les données de démo (voir [Comptes de démo](#comptes-de-démo)) :
+
+```bash
+docker compose exec server npm run seed
+```
+
 | Service | URL | Rôle |
 |---------|-----|------|
 | `client` | http://localhost:5173 | React (Vite), proxy `/api` et `/socket.io` vers l'API |
@@ -84,4 +90,23 @@ npm run dev          # API (5000) + client (5173)
 
 ## Comptes de démo
 
-_À compléter après le seed._
+Créés par le seed (`server/seed/`), mot de passe commun : **`Demo1234`**.
+
+| Email | Rôle | Persona |
+|-------|------|---------|
+| `nathalie@helpdesk.test` | admin | Nathalie Roux — responsable support / DSI |
+| `karim@helpdesk.test` | technician | Karim Benali — technicien |
+| `thomas@helpdesk.test` | technician | Thomas Leroy — technicien |
+| `sophie@helpdesk.test` | user | Sophie Martin — Comptabilité |
+| `pierre@helpdesk.test` | user | Pierre Durand — Commercial |
+| `julie@helpdesk.test` | user | Julie Bernard — Ressources humaines |
+| `marc@helpdesk.test` | technician | Marc Petit — **compte désactivé** (connexion refusée, RG8) |
+
+Le seed crée aussi **19 tickets** répartis sur les 30 derniers jours (4 ouverts, 4 en cours, 2 en attente, 3 résolus, 6 fermés), avec un historique qui rejoue les vraies règles (transitions RG3, prise en charge automatique RG4), des dates de prise en charge / résolution réalistes, **22 commentaires** (dont 4 notes internes) et **31 notifications**.
+
+| Commande | Effet |
+|----------|-------|
+| `docker compose exec server npm run seed` | Remplit une base **vide** (refuse si des utilisateurs existent) |
+| `docker compose exec server npm run seed -- --reset` | **Efface** utilisateurs, tickets, commentaires, notifications et compteurs, puis recrée les données de démo |
+
+Le seed refuse de s'exécuter en production (`NODE_ENV=production`) et affiche la base ciblée avant toute écriture. Attention : avec un `MONGO_URI` Atlas partagé, `--reset` efface les données de toute l'équipe.
