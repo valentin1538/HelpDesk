@@ -541,6 +541,7 @@ stateDiagram-v2
 | `POST /tickets/:id/comments` | `{ content (≤ 5000), isInternal? }` | `201 { comment }` (auteur peuplé : nom, email, rôle) | `400 VALIDATION_ERROR` · `401` · `404` · `409 TICKET_CLOSED` (RG7)                             |
 
 - **RG6 — notes internes** : le filtre est appliqué dans la requête (`isInternal: false`) pour un `user`, pas après coup ; un `user` qui envoie `isInternal: true` voit le champ ignoré (le commentaire reste public). Une note interne est signalée visuellement dans le fil du support.
+- **`isInternal` : booléen JSON strict** (corrigé à l'audit du Sprint 2) : `isBoolean()` acceptait la chaîne `"false"`, que `Boolean("false")` convertissait en `true` → un message voulu public devenait une note interne. La validation exige désormais `typeof isInternal === 'boolean'` (sinon `400`) et le service ne crée une note interne que pour la valeur `true`.
 - **RG7 — ticket fermé** : plus aucun commentaire n'est accepté (`409 TICKET_CLOSED`), mais le fil reste lisible.
 - **Pagination** : tri `createdAt` décroissant pour que la page 1 contienne les messages les plus récents, puis remise en ordre chronologique avant la réponse ; le client propose « Voir les messages précédents » tant que `page < totalPages`. `total` et `totalPages` portent sur les commentaires **visibles par l'appelant** (une note interne ne compte pas pour un `user`).
 - **404 plutôt que 403** pour un ticket d'un autre utilisateur : réutilisation de `findTicketForUser` (RG1), comme pour le détail et le cycle de vie.

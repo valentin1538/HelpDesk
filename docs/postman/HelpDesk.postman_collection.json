@@ -1749,6 +1749,58 @@
           ]
         },
         {
+          "name": "isInternal en chaîne \"false\" → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{techToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Message que je veux public\",\n  \"isInternal\": \"false\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Régression (audit Sprint 2) : la chaîne \"false\" était acceptée puis convertie en true → note interne involontaire. Seul un booléen JSON est accepté."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Erreur sur isInternal', () => pm.expect(pm.response.json().error.details).to.have.property('isInternal'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Ticket fermé → commentaire refusé → 409 (RG7)",
           "request": {
             "method": "POST",

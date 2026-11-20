@@ -87,8 +87,12 @@ export default function CommentThread({ ticket }) {
     setError(null);
     try {
       const result = await listComments(ticket._id, { page: pagination.page + 1 });
-      // les pages vont du plus récent au plus ancien : les précédents se placent devant
-      setComments((current) => [...result.comments, ...current]);
+      // les pages vont du plus récent au plus ancien : les précédents se placent devant.
+      // Un message posté entre-temps décale la pagination : on écarte ceux déjà affichés.
+      setComments((current) => {
+        const shown = new Set(current.map((c) => c._id));
+        return [...result.comments.filter((c) => !shown.has(c._id)), ...current];
+      });
       setPagination(result.pagination);
     } catch (err) {
       setError(err);
@@ -100,10 +104,7 @@ export default function CommentThread({ ticket }) {
   async function handleSubmit(event) {
     event.preventDefault();
     if (!content.trim()) {
-      setError({
-        message: 'Écrivez un message avant de l’envoyer.',
-        details: { content: 'Le message ne peut pas être vide' },
-      });
+      setError({ details: { content: 'Le message ne peut pas être vide' } });
       return;
     }
 
@@ -125,7 +126,8 @@ export default function CommentThread({ ticket }) {
 
   return (
     <div className="comments">
-      {error && (
+      {/* Erreur par champ → affichée sous le champ uniquement ; erreur générale → alerte */}
+      {error && !error.details && (
         <p className="alert" role="alert">
           <CircleAlert size={16} aria-hidden="true" />
           {error.message}
