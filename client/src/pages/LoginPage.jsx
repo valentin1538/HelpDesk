@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { CircleAlert } from 'lucide-react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router';
 import FormField from '../components/FormField.jsx';
+import AuthLayout from '../components/layout/AuthLayout.jsx';
+import Button from '../components/ui/Button.jsx';
 import { homePathFor } from '../context/AuthContext.js';
 import { useAuth } from '../hooks/useAuth.js';
 
@@ -32,22 +35,21 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="auth-page">
-      <form className="card auth-card" onSubmit={handleSubmit} noValidate>
-        <h1>Se connecter</h1>
-        <p className="muted">HelpDesk — support informatique</p>
-
+    <AuthLayout title="Bon retour parmi nous" subtitle="Connectez-vous pour suivre vos demandes.">
+      <form onSubmit={handleSubmit} noValidate>
         {error && !error.details && (
           <p className="alert" role="alert">
+            <CircleAlert size={16} aria-hidden="true" />
             {error.message}
           </p>
         )}
 
         <FormField
-          label="Email"
+          label="Email professionnel"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="prenom.nom@entreprise.fr"
           value={form.email}
           onChange={update}
           error={error?.details?.email}
@@ -65,14 +67,14 @@ export default function LoginPage() {
           required
         />
 
-        <button className="btn btn-primary" type="submit" disabled={submitting}>
+        <Button type="submit" size="lg" block loading={submitting}>
           {submitting ? 'Connexion…' : 'Se connecter'}
-        </button>
-
-        <p className="auth-switch">
-          Pas encore de compte ? <Link to="/register">S’inscrire</Link>
-        </p>
+        </Button>
       </form>
-    </main>
+
+      <p className="auth-switch">
+        Pas encore de compte ? <Link to="/register">Créer un compte</Link>
+      </p>
+    </AuthLayout>
   );
 }

@@ -8,6 +8,7 @@ import TicketDetailPage from './pages/TicketDetailPage.jsx';
 import TechQueuePage from './pages/TechQueuePage.jsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
+import StyleguidePage from './pages/StyleguidePage.jsx';
 
 export default function App() {
   return (
@@ -21,6 +22,7 @@ export default function App() {
         <Route path="tickets/:id" element={<TicketDetailPage />} />
         <Route path="queue" element={<TechQueuePage />} />
         <Route path="admin" element={<AdminDashboardPage />} />
+        <Route path="styleguide" element={<StyleguidePage />} />
       </Route>
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
