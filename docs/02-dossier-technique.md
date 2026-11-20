@@ -436,6 +436,28 @@ Format d'erreur : `{ "error": { "code": "FORBIDDEN", "message": "..." } }`.
 | POST | `/auth/login` | public | → `{ token, user }` |
 | GET | `/auth/me` | connecté | Profil courant |
 
+**Détail (US01)**
+
+| Route | Corps | Succès | Erreurs |
+|-------|-------|--------|---------|
+| `POST /auth/register` | `{ firstName, lastName, email, password, department? }` | `201 { token, user }` | `400 VALIDATION_ERROR` (mot de passe ≥ 8 caractères avec une lettre et un chiffre, email valide…) · `409 DUPLICATE` (email déjà utilisé) · `429 TOO_MANY_REQUESTS` |
+| `POST /auth/login` | `{ email, password }` | `200 { token, user }` | `400 VALIDATION_ERROR` · `401 INVALID_CREDENTIALS` · `403 ACCOUNT_DISABLED` · `429 TOO_MANY_REQUESTS` |
+| `GET /auth/me` | — (en-tête `Authorization: Bearer <token>`) | `200 { user }` | `401 UNAUTHORIZED` (pas de token) · `401 INVALID_TOKEN` · `401 TOKEN_EXPIRED` · `401` compte désactivé |
+
+**Sécurité de l'authentification**
+
+| Mesure | Mise en œuvre | Menace couverte |
+|--------|---------------|-----------------|
+| Hash des mots de passe | bcrypt, coût 12 (hook `pre('save')` du modèle `User`) | Fuite de la base : mots de passe non récupérables |
+| Mot de passe jamais exposé | `select: false` + retrait dans `toJSON` | Fuite par une réponse de l'API |
+| Rôle imposé à l'inscription | Le champ `role` du client est ignoré, toujours `user` | Auto-promotion en administrateur |
+| JWT signé HS256, algorithme imposé à la vérification | `jsonwebtoken`, `algorithms: ['HS256']` | Jeton falsifié, attaque `alg: none` |
+| Compte vérifié à chaque requête | `authenticate` recharge l'utilisateur et vérifie `isActive` | Jeton encore valide d'un compte désactivé (RG8) |
+| Message et durée identiques en cas d'échec | Même `401 INVALID_CREDENTIALS` ; comparaison bcrypt factice si l'email est inconnu | Énumération des comptes (par le message ou par le temps de réponse) |
+| Limitation des tentatives | `express-rate-limit` : 20 requêtes / 15 min / IP sur `register` et `login` | Force brute, création de comptes en masse |
+
+Derrière un reverse proxy en production, activer `app.set('trust proxy', 1)` pour que la limitation se fasse sur l'IP réelle du client.
+
 ### Tickets
 | Méthode | Route | Accès | Description |
 |---------|-------|-------|-------------|
