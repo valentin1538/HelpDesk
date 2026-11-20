@@ -126,33 +126,33 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 
 **Réajustement de la répartition (20/11).** Edoardo concentre son temps sur US09 (première US full-stack de son côté, avec middleware serveur, gardes de routes et navigation filtrée). Pour tenir l'objectif du sprint, Valentin reprend US02, US06 et TECH-13. Pour que chacun puisse expliquer toute l'application en soutenance, chaque PR reste relue par l'autre membre.
 
-### Bilan du Sprint 2 (20/11, fin de journée)
+### Bilan du Sprint 2 (20/11) — ✅ clos
 
-| Élément                                                               | Responsable | Pts   | État                                                                                                                            |
-| --------------------------------------------------------------------- | ----------- | ----- | ------------------------------------------------------------------------------------------------------------------------------- |
-| TECH-08 — modélisation de la base de données                          | Valentin    | 3     | ✅                                                                                                                              |
-| TECH-09 / TECH-16 — monorepo + Docker                                 | Valentin    | 1 + 3 | ✅ PR #37                                                                                                                       |
-| TECH-10 — socle serveur Express                                       | Valentin    | 3     | ✅ PR #39                                                                                                                       |
-| TECH-11 — schémas Mongoose                                            | Valentin    | 3     | ✅ PR #40                                                                                                                       |
-| TECH-12 — client React                                                | Edoardo     | 2     | ✅ PR #44                                                                                                                       |
-| TECH-13 — seed                                                        | Valentin    | 2     | ✅ PR #47                                                                                                                       |
-| TECH-14 — collection Postman                                          | Valentin    | 1     | ✅ PR #43                                                                                                                       |
-| US01 — inscription et connexion                                       | Valentin    | 5     | ✅ PR #41                                                                                                                       |
-| US21 — identité Opale et design system _(ajoutée en cours de sprint)_ | Valentin    | 5     | ✅ PR #46                                                                                                                       |
-| US02 — déclarer un incident                                           | Valentin    | 3     | ✅ PR #48                                                                                                                       |
-| US05 — statut et assignation (back + page détail)                     | Valentin    | 3     | ✅ PR #42, #49                                                                                                                  |
-| US06 — commentaires                                                   | Valentin    | 3     | ✅ PR #50                                                                                                                       |
-| Audit de fin de sprint (correctifs)                                   | Valentin    | —     | ✅ PR audit                                                                                                                     |
-| **US09 — protection des routes par rôle**                             | Edoardo     | 3     | ⚠️ **non livrée** : la branche poussée ne contient aucun commit d'US09 (travail resté en local) ; PR #51 vide et ciblant `main` |
-| TECH-15 — rapport IA du sprint                                        | Valentin    | 1     | ⬜ dernier élément du sprint                                                                                                    |
+| Élément                                                               | Responsable                  | Pts   | État           |
+| --------------------------------------------------------------------- | ---------------------------- | ----- | -------------- |
+| TECH-08 — modélisation de la base de données                          | Valentin                     | 3     | ✅             |
+| TECH-09 / TECH-16 — monorepo + Docker                                 | Valentin                     | 1 + 3 | ✅ PR #37      |
+| TECH-10 — socle serveur Express                                       | Valentin                     | 3     | ✅ PR #39      |
+| TECH-11 — schémas Mongoose                                            | Valentin                     | 3     | ✅ PR #40      |
+| TECH-12 — client React                                                | Edoardo                      | 2     | ✅ PR #44      |
+| TECH-13 — seed                                                        | Valentin                     | 2     | ✅ PR #47      |
+| TECH-14 — collection Postman                                          | Valentin                     | 1     | ✅ PR #43      |
+| US01 — inscription et connexion                                       | Valentin                     | 5     | ✅ PR #41      |
+| US21 — identité Opale et design system _(ajoutée en cours de sprint)_ | Valentin                     | 5     | ✅ PR #46      |
+| US02 — déclarer un incident                                           | Valentin                     | 3     | ✅ PR #48      |
+| US05 — statut et assignation (back + page détail)                     | Valentin                     | 3     | ✅ PR #42, #49 |
+| US06 — commentaires                                                   | Valentin                     | 3     | ✅ PR #50      |
+| Audit de fin de sprint (correctifs)                                   | Valentin                     | —     | ✅ PR #52      |
+| US09 — protection des routes par rôle                                 | Edoardo (relue par Valentin) | 3     | ✅ PR #53      |
+| TECH-15 — rapport IA du sprint                                        | Valentin                     | 1     | ✅ PR TECH-15  |
 
-**Vélocité Sprint 2 :** 37 pts livrés sur 41 prévus (US09 et TECH-15 restants).
+**Vélocité Sprint 2 :** 41 pts livrés sur 41 prévus (dont US21, 5 pts, ajoutée en cours de sprint). Sprint 2 clos le 20/11.
 
 **Audit de fin de sprint** (relecture du code fusionné, tests automatiques, parcours par rôle) :
 
 - tests : lint, Prettier (code), build, `npm audit` (0 vulnérabilité) ✅ · seed + 9 contrôles transverses (RG1, RG6 sur les 19 tickets, RG7, RG8) ✅ · **collection Postman complète : 39 requêtes, 120 assertions, 0 échec** · parcours demandeur / technicien sur la page détail (notes internes masquées / visibles) ✅
 - **corrigé** : `isInternal: "false"` (chaîne) créait une **note interne** (validation trop permissive) ; doublons possibles dans « messages précédents » après un envoi ; erreur de validation affichée deux fois dans le fil
-- **reste ouvert** : US09 (sans elle, le menu d'un collaborateur montre « File du support » / « Tableau de bord » et ces pages s'ouvrent ; l'API reste protégée par les règles des services)
+- **intégration d’US09** : seuls les fichiers de la US repris, deux défauts corrigés à la relecture (carte utilisateur / déconnexion, page 404) ; routes et menu vérifiés pour les trois rôles
 
 **Rétrospective**
 
