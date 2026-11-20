@@ -1,4 +1,8 @@
-# HelpDesk IT — Application de gestion d'incidents (MERN)
+# Opale — Service desk IT (MERN)
+
+<img src="docs/identite/opale-symbole.svg" width="64" alt="Logo Opale" />
+
+*Le support IT, tout en clarté.*
 
 Application web de ticketing : déclaration et suivi d'incidents, échanges utilisateur ↔ support en temps réel, tableau de bord statistique.
 
@@ -10,6 +14,7 @@ Application web de ticketing : déclaration et suivi d'incidents, échanges util
 - [Dossier technique](docs/02-dossier-technique.md) — architecture, modèle de données, API, temps réel, montée en charge
 - [Planning des sprints](docs/03-planning-sprints.md)
 - [Rapport d'utilisation de l'IA](docs/04-rapport-ia.md)
+- [Charte graphique](docs/05-charte-graphique.md) — identité Opale, design system (guide vivant : `/styleguide`)
 
 ## Installation (Docker — méthode de référence)
 

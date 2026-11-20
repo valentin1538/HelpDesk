@@ -1,4 +1,4 @@
-# Dossier de cadrage — HelpDesk IT (MERN)
+# Dossier de cadrage — Opale, service desk IT (MERN)
 
 > Mini-Projet 3 — Application de gestion d'incidents IT
 > Version 1.0 — Sprint 1 (17/11/2026)
@@ -118,6 +118,7 @@ Estimation en points (1 = très simple, 8 = complexe).
 | US13 | En tant que technicien, je veux ajouter des notes internes invisibles pour l'utilisateur.                                           | 2   | S3     |
 | US14 | En tant qu'admin, je veux gérer les comptes (rôle, activation).                                                                     | 3   | S3     |
 | US15 | En tant qu'utilisateur, je veux un centre de notifications (non lues / lues).                                                       | 3   | S4     |
+| US21 | En tant qu'utilisateur, je veux une interface claire, cohérente et agréable afin de trouver rapidement l'information et d'avoir confiance dans l'outil (identité visuelle + design system). | 5   | S2     |
 
 ### COULD — si le temps le permet
 
@@ -150,3 +151,28 @@ Le backlog contient aussi **15 tâches techniques** (`TECH-01` → `TECH-15`, la
 - **RG6** — Une note interne n'est jamais envoyée (ni via l'API ni via Socket.io) à un `user`.
 - **RG7** — Un ticket fermé n'accepte plus de commentaire.
 - **RG8** — Un compte désactivé ne peut plus se connecter.
+
+---
+
+## 6. Identité de la solution
+
+| | |
+|---|---|
+| **Nom** | **Opale** — service desk IT |
+| **Signature** | *Le support IT, tout en clarté.* |
+| **Logo** | Squircle au dégradé irisé (reflets d'une opale) portant un anneau « O » et un éclat — [symbole](identite/opale-symbole.svg) |
+| **Personnalité** | Calme, clair, fiable, attentionné |
+
+<img src="identite/opale-symbole.svg" width="72" alt="Logo Opale" />
+
+**Pourquoi ce nom ?** L'opale est une pierre douce et lumineuse : elle incarne **la clarté** (réponse au manque de visibilité, P2) et **le calme** face à un incident informatique stressant. Le nom est court, non technique et premium, ce qui sert l'adoption par des collaborateurs non techniciens (persona Sophie).
+
+**Parti pris visuel** — *doux, luxueux, premium* :
+- **structure inspirée de Jira**, référence des outils de ticketing : barre latérale par groupes, barre supérieure avec recherche et bouton « Créer », clés de ticket `HD-0042`, pastilles de statut, icônes de priorité ;
+- **finition inspirée d'Apple** : gris système, typographie Inter (proche de SF Pro), coins continus, barres en verre dépoli, ombres très douces, thème sombre automatique ;
+- **tendances UX actuelles** : grilles « bento », états vides qui proposent l'action suivante, micro-interactions discrètes, accessibilité (contrastes AA, focus visibles, mouvement réduit).
+
+**Justification métier (US21)** : un outil adopté est un outil qui paraît simple et digne de confiance ; un design system commun garantit aussi la cohérence des écrans développés en parallèle par l'équipe.
+
+Détail complet (couleurs, typographie, composants, règles) : [charte graphique](05-charte-graphique.md) · guide vivant dans l'application : `/styleguide`.
+

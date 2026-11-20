@@ -1,0 +1,184 @@
+/* =====================================================================
+   Opale — design tokens
+   Toutes les valeurs visuelles de l'application. Les composants n'utilisent
+   QUE ces variables : changer la charte = changer ce fichier.
+   Thème clair par défaut, thème sombre automatique (prefers-color-scheme).
+   ===================================================================== */
+
+:root {
+  color-scheme: light;
+
+  /* --- Neutres (inspirés des gris système Apple) --- */
+  --color-bg: #f5f5f7;
+  --color-bg-subtle: #fafafb;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f7f7f9;
+  --color-glass: rgba(255, 255, 255, 0.72);
+  --color-text: #1d1d1f;
+  --color-text-secondary: #6e6e73;
+  --color-text-tertiary: #8e8e93;
+  --color-border: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.14);
+  --color-overlay: rgba(15, 15, 20, 0.32);
+
+  /* --- Accent « Opale » (indigo doux) --- */
+  --color-accent: #5e5ce6;
+  --color-accent-hover: #4b49d1;
+  --color-accent-soft: rgba(94, 92, 230, 0.1);
+  --color-accent-text: #4744c9;
+  --color-on-accent: #ffffff;
+  --color-focus: rgba(94, 92, 230, 0.42);
+  --gradient-opale: linear-gradient(135deg, #8fd3fe 0%, #a99bfb 52%, #f3a7d6 100%);
+  --gradient-opale-soft: linear-gradient(
+    135deg,
+    rgba(143, 211, 254, 0.18) 0%,
+    rgba(169, 155, 251, 0.18) 52%,
+    rgba(243, 167, 214, 0.18) 100%
+  );
+
+  /* --- Sémantique --- */
+  --color-danger: #ff3b30;
+  --color-danger-text: #c9302b;
+  --color-danger-soft: rgba(255, 59, 48, 0.1);
+  --color-success-text: #1e7f3a;
+  --color-success-soft: rgba(48, 209, 88, 0.14);
+
+  /* --- Statuts des tickets (pastille + texte + fond teinté) --- */
+  --status-open: #0a84ff;
+  --status-open-text: #0060df;
+  --status-open-soft: rgba(10, 132, 255, 0.12);
+  --status-progress: #ff9f0a;
+  --status-progress-text: #a35400;
+  --status-progress-soft: rgba(255, 159, 10, 0.15);
+  --status-waiting: #bf5af2;
+  --status-waiting-text: #8e3cc0;
+  --status-waiting-soft: rgba(191, 90, 242, 0.13);
+  --status-resolved: #30d158;
+  --status-resolved-text: #1e7f3a;
+  --status-resolved-soft: rgba(48, 209, 88, 0.15);
+  --status-closed: #8e8e93;
+  --status-closed-text: #5b5b60;
+  --status-closed-soft: rgba(120, 120, 128, 0.14);
+
+  /* --- Priorités --- */
+  --priority-low: #8e8e93;
+  --priority-medium: #0a84ff;
+  --priority-high: #ff9f0a;
+  --priority-critical: #ff3b30;
+
+  /* --- Typographie --- */
+  --font-sans:
+    'Inter Variable', -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui,
+    sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Cascadia Code', Menlo, monospace;
+  --text-xs: 0.75rem; /* 12 */
+  --text-sm: 0.8125rem; /* 13 */
+  --text-base: 0.9375rem; /* 15 */
+  --text-md: 1.0625rem; /* 17 */
+  --text-lg: 1.25rem; /* 20 */
+  --text-xl: 1.625rem; /* 26 */
+  --text-2xl: 2.125rem; /* 34 */
+  --text-3xl: 2.75rem; /* 44 */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --tracking-tight: -0.022em;
+  --tracking-display: -0.032em;
+  --weight-regular: 420;
+  --weight-medium: 520;
+  --weight-semibold: 620;
+  --weight-bold: 700;
+
+  /* --- Espacements (grille de 4 px) --- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* --- Rayons (formes douces) --- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+  --radius-full: 999px;
+
+  /* --- Ombres (douces, en couches) --- */
+  --shadow-xs: 0 1px 1px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 8px -2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.04), 0 8px 24px -6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.04), 0 24px 56px -12px rgba(0, 0, 0, 0.18);
+  --shadow-accent: 0 6px 20px -6px rgba(94, 92, 230, 0.55);
+
+  /* --- Mouvement --- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 360ms;
+
+  /* --- Mise en page --- */
+  --sidebar-width: 264px;
+  --topbar-height: 64px;
+  --content-max-width: 1180px;
+  --blur-glass: saturate(180%) blur(20px);
+}
+
+/* ---------------------------------------------------------------------
+   Thème sombre — suit le réglage du système (comme macOS / iOS)
+   --------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-bg: #0e0e10;
+    --color-bg-subtle: #141416;
+    --color-surface: #1c1c1e;
+    --color-surface-hover: #242427;
+    --color-glass: rgba(24, 24, 27, 0.72);
+    --color-text: #f5f5f7;
+    --color-text-secondary: #a1a1a6;
+    --color-text-tertiary: #7c7c80;
+    --color-border: rgba(255, 255, 255, 0.09);
+    --color-border-strong: rgba(255, 255, 255, 0.16);
+    --color-overlay: rgba(0, 0, 0, 0.55);
+
+    --color-accent: #7d7aff;
+    --color-accent-hover: #918eff;
+    --color-accent-soft: rgba(125, 122, 255, 0.16);
+    --color-accent-text: #aeacff;
+    --color-focus: rgba(125, 122, 255, 0.5);
+    --gradient-opale-soft: linear-gradient(
+      135deg,
+      rgba(143, 211, 254, 0.1) 0%,
+      rgba(169, 155, 251, 0.12) 52%,
+      rgba(243, 167, 214, 0.1) 100%
+    );
+
+    --color-danger: #ff453a;
+    --color-danger-text: #ff8a82;
+    --color-danger-soft: rgba(255, 69, 58, 0.16);
+    --color-success-text: #5fd97f;
+    --color-success-soft: rgba(48, 209, 88, 0.16);
+
+    --status-open-text: #64b2ff;
+    --status-open-soft: rgba(10, 132, 255, 0.18);
+    --status-progress-text: #ffb340;
+    --status-progress-soft: rgba(255, 159, 10, 0.18);
+    --status-waiting-text: #da8fff;
+    --status-waiting-soft: rgba(191, 90, 242, 0.2);
+    --status-resolved-text: #5fd97f;
+    --status-resolved-soft: rgba(48, 209, 88, 0.18);
+    --status-closed-text: #a1a1a6;
+    --status-closed-soft: rgba(142, 142, 147, 0.2);
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+    --shadow-lg: 0 24px 56px -12px rgba(0, 0, 0, 0.7);
+  }
+}

@@ -1,6 +1,9 @@
 import { useState } from 'react';
+import { CircleAlert } from 'lucide-react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import FormField from '../components/FormField.jsx';
+import AuthLayout from '../components/layout/AuthLayout.jsx';
+import Button from '../components/ui/Button.jsx';
 import { homePathFor } from '../context/AuthContext.js';
 import { useAuth } from '../hooks/useAuth.js';
 
@@ -34,13 +37,14 @@ export default function RegisterPage() {
   const fieldError = (name) => error?.details?.[name];
 
   return (
-    <main className="auth-page">
-      <form className="card auth-card" onSubmit={handleSubmit} noValidate>
-        <h1>Créer un compte</h1>
-        <p className="muted">Pour déclarer et suivre vos incidents informatiques</p>
-
+    <AuthLayout
+      title="Créer votre compte"
+      subtitle="Pour déclarer et suivre vos incidents informatiques."
+    >
+      <form onSubmit={handleSubmit} noValidate>
         {error && !error.details && (
           <p className="alert" role="alert">
+            <CircleAlert size={16} aria-hidden="true" />
             {error.message}
           </p>
         )}
@@ -67,10 +71,11 @@ export default function RegisterPage() {
           />
         </div>
         <FormField
-          label="Email"
+          label="Email professionnel"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="prenom.nom@entreprise.fr"
           value={form.email}
           onChange={update}
           error={fieldError('email')}
@@ -97,14 +102,14 @@ export default function RegisterPage() {
           required
         />
 
-        <button className="btn btn-primary" type="submit" disabled={submitting}>
-          {submitting ? 'Création du compte…' : 'S’inscrire'}
-        </button>
-
-        <p className="auth-switch">
-          Déjà un compte ? <Link to="/login">Se connecter</Link>
-        </p>
+        <Button type="submit" size="lg" block loading={submitting}>
+          {submitting ? 'Création du compte…' : 'Créer mon compte'}
+        </Button>
       </form>
-    </main>
+
+      <p className="auth-switch">
+        Déjà un compte ? <Link to="/login">Se connecter</Link>
+      </p>
+    </AuthLayout>
   );
 }
