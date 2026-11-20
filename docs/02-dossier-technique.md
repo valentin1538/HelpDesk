@@ -468,6 +468,31 @@ Derrière un reverse proxy en production, activer `app.set('trust proxy', 1)` po
 | PATCH | `/tickets/:id/status` | staff ; user pour `closed` / réouverture | `{ status }` — transitions RG3 |
 | PATCH | `/tickets/:id/assign` | tech (soi-même) / admin | `{ assignedTo }` |
 
+**Détail du cycle de vie (US05)** — routes dans `routes/ticketWorkflowRoutes.js`, règles dans `services/ticketWorkflowService.js`.
+
+```mermaid
+stateDiagram-v2
+  [*] --> open : création
+  open --> in_progress : support (RG4 : auto-assignation)
+  in_progress --> waiting_user : support
+  waiting_user --> in_progress : support
+  in_progress --> resolved : support
+  resolved --> closed : support ou auteur
+  resolved --> in_progress : support ou auteur (réouverture)
+  closed --> [*]
+```
+
+| Route | Règles | Réponses |
+|-------|--------|----------|
+| `PATCH /tickets/:id/status` `{ status }` | RG3 transitions ci-dessus ; RG2 l'auteur ne peut que fermer ou rouvrir un ticket **résolu** ; RG4 passage en cours sans assigné → assigné à l'agent ; RG5 entrée `status_changed` (+ `assigned`) ; dates : `firstResponseAt` (1ʳᵉ prise en charge), `resolvedAt` (effacée à la réouverture), `closedAt` | `200 { ticket }` · `400` statut / id invalide · `403` action réservée au support · `404` ticket inexistant **ou d'un autre utilisateur** · `409 INVALID_TRANSITION` (`details.allowed`) · `409 CONCURRENT_UPDATE` |
+| `PATCH /tickets/:id/assign` `{ assignedTo: <id> \| "me" \| null }` | Support uniquement ; un technicien ne peut que **se** l'assigner, et seulement si le ticket est libre ; l'admin assigne à tout membre **actif** du support ou désassigne (`null`) ; ticket fermé non réassignable ; idempotent ; entrée `assigned` (`from` / `to`) ; `firstResponseAt` à la 1ʳᵉ assignation | `200 { ticket }` · `400 INVALID_ASSIGNEE` · `403` · `404` · `409 ALREADY_ASSIGNED` · `409 TICKET_CLOSED` · `409 CONCURRENT_UPDATE` |
+
+**Choix de conception**
+- **Une seule écriture** : statut, historique, assignation et dates sont modifiés sur le document puis enregistrés par un unique `ticket.save()` — atomique, car tout est dans le même document (intérêt de l'historique imbriqué).
+- **Verrou optimiste** (`optimisticConcurrency: true` sur `Ticket`) : si deux agents modifient le même ticket simultanément, le second reçoit `409 CONCURRENT_UPDATE` au lieu d'écraser silencieusement le premier.
+- **404 plutôt que 403** pour le ticket d'un autre utilisateur (`services/ticketAccess.js`, réutilisable par toutes les routes `/tickets/:id`) : on ne révèle pas l'existence du ticket.
+- **Règles de rôle dans le service**, pas dans un middleware : elles dépendent du ticket (auteur, statut, assigné), pas seulement du rôle.
+
 ### Commentaires
 | Méthode | Route | Accès | Description |
 |---------|-------|-------|-------------|
