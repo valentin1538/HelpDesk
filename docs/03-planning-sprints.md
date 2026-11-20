@@ -76,7 +76,7 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 **Vélocité Sprint 1 :** 19 pts terminés.
 **Livrables :** dossier de cadrage v1, dossier technique v0, maquettes.
 
-## Sprint 2 — Données, socle API + squelette front
+## Sprint 2 — Données, socle API + squelette front (19–20/11, prolongé d'une journée)
 
 **Objectif :** modèle de données conçu et implémenté, API d'authentification et de tickets fonctionnelle, front initialisé avec l'authentification.
 
@@ -87,11 +87,11 @@ Les deux types sont estimés en story points et comptent dans la vélocité.
 | TECH-08 | **Modélisation de la base de données** : MCD, MLD normalisé de référence, justification de la dénormalisation NoSQL, décisions table par table, schéma dénormalisé, index ([§3 du dossier technique](02-dossier-technique.md#3-modèle-de-données)) | Valentin | 3 | ✅ |
 | TECH-09 | Initialisation du monorepo (`package.json` racine, npm workspaces, `npm run dev`) — PR #37 | Valentin | 1 | ✅ |
 | TECH-16 | **Dockerisation** de l'environnement (compose : mongo, server, client) — PR #37 | Valentin | 3 | ✅ |
-| TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`) | Valentin | 3 | 🔄 |
-| TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ⬜ |
-| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | ⬜ |
+| TECH-10 | Finalisation du serveur Express (erreurs centralisées, 404, arrêt propre, `routes/index.js`) | Valentin | 3 | ✅ PR #39 |
+| TECH-11 | Implémentation des schémas Mongoose (5 modèles, validations, `priorityRank`, index) | Valentin | 3 | ✅ PR #40 |
+| TECH-12 | Initialisation du client React (React Router, axios + JWT, layout des maquettes) | Edoardo | 2 | 🔄 |
 | TECH-13 | Script de seed (comptes et tickets de démo) | Edoardo | 2 | ⬜ |
-| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | ⬜ |
+| TECH-14 | Collection Postman / tests de l'API | Valentin | 1 | 🔍 PR #43 |
 | TECH-15 | Rapport IA — Sprint 2 | Valentin | 1 | ⬜ |
 
 Les tâches techniques restent réparties selon leur nature : **TECH-10 / TECH-11** posent le socle serveur dont dépendent toutes les US, **TECH-12** le socle client. Elles sont faites **en premier, en parallèle**, puis chacun enchaîne sur ses US.
@@ -120,6 +120,21 @@ Les tâches techniques restent réparties selon leur nature : **TECH-10 / TECH-1
 Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentification, droits et création de ticket restent prioritaires.
 
 **Point d'intégration en fin de journée :** se connecter depuis le front et créer un ticket réel en base.
+
+**Prolongation (20/11).** La dockerisation de l'environnement (TECH-16), imposée en cours de sprint, et le dépannage de Docker Desktop sous Windows ont consommé environ une demi-journée. Le sprint est prolongé d'un jour plutôt que de sacrifier un Must : les US d'authentification, de droits et de création de ticket restent prioritaires.
+
+**État au 20/11**
+
+| Élément | Responsable | État |
+|---------|-------------|------|
+| US01 — back (register, login, me, `authenticate`) | Valentin | 🔍 PR #41 |
+| US01 — front (AuthContext, pages Login / Register) | Valentin | ⏳ attend TECH-12 |
+| US05 — back (statut, assignation, verrou optimiste) | Valentin | 🔍 PR #42 (dépend de #41) |
+| US05 — front (boutons d'action) | Valentin | ⏳ attend TECH-12 |
+| TECH-12 — client React | Edoardo | 🔄 en cours |
+| US09, US02, US06, TECH-13 | Edoardo | ⬜ après TECH-12 ; le back d'US09 / US02 / US06 peut démarrer dès #41 mergée |
+
+**Ordre de merge recommandé :** #41 → #42 (rebasée après #41) → #43 → TECH-12 → fronts US01 / US05.
 
 > À partir du Sprint 3, les colonnes « back / front » ci-dessous sont indicatives : la répartition se fait par US au sprint planning du jour.
 
