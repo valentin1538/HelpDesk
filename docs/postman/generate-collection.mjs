@@ -205,10 +205,54 @@ pm.test('Rôle admin', () => pm.expect(pm.response.json().user.role).to.eql('adm
       ],
     },
     {
-      name: '02 — Cycle de vie du ticket (US05)',
-      description: 'Nécessite la création de ticket (US02). Exécuter après le dossier 01.',
+      name: '02 — Déclarer un incident (US02)',
+      description:
+        'Exécuter après le dossier 01 (utilise userToken). Enregistre ticketId pour le dossier 03.',
       item: [
-        req('Créer un ticket (US02)', {
+        req('Créer un ticket — sans token → 401', {
+          method: 'POST',
+          path: '/tickets',
+          body: { title: 'Imprimante 2e étage HS', description: 'HS', category: 'hardware' },
+          tests: expectError(401, 'UNAUTHORIZED'),
+        }),
+        req('Créer un ticket — données invalides → 400', {
+          method: 'POST',
+          path: '/tickets',
+          auth: 'userToken',
+          body: { title: 'abc', description: '   ', category: 'cafe', priority: 'urgent' },
+          tests: `${expectError(400, 'VALIDATION_ERROR')}
+pm.test('Détail par champ', () => {
+  pm.expect(pm.response.json().error.details).to.have.all.keys('title', 'description', 'category', 'priority');
+});`,
+        }),
+        req('Créer un ticket — champs protégés ignorés', {
+          method: 'POST',
+          path: '/tickets',
+          auth: 'userToken',
+          body: {
+            title: 'Teams : notifications absentes',
+            description: 'Plus aucune notification sur mon poste.',
+            category: 'software',
+            status: 'closed',
+            assignedTo: '{{techId}}',
+            number: 999,
+            priorityRank: 4,
+          },
+          description:
+            'status, assignedTo, number et priorityRank sont envoyés exprès : le serveur doit les ignorer (protection contre l’assignation de masse).',
+          tests: `const { ticket } = pm.response.json();
+pm.test('201', () => pm.response.to.have.status(201));
+pm.test('Statut forcé à open, non assigné', () => {
+  pm.expect(ticket.status).to.eql('open');
+  pm.expect(ticket.assignedTo).to.eql(null);
+});
+pm.test('Numéro et rang calculés par le serveur', () => {
+  pm.expect(ticket.number).to.not.eql(999);
+  pm.expect(ticket.priority).to.eql('medium');
+  pm.expect(ticket.priorityRank).to.eql(2);
+});`,
+        }),
+        req('Créer un ticket', {
           method: 'POST',
           path: '/tickets',
           auth: 'userToken',
@@ -218,10 +262,26 @@ pm.test('Rôle admin', () => pm.expect(pm.response.json().user.role).to.eql('adm
             category: 'hardware',
             priority: 'high',
           },
-          tests: `pm.test('201 + ticket', () => pm.response.to.have.status(201));
-const { ticket } = pm.response.json();
+          tests: `const { ticket } = pm.response.json();
+pm.test('201 + en-tête Location', () => {
+  pm.response.to.have.status(201);
+  pm.expect(pm.response.headers.get('Location')).to.eql('/api/tickets/' + ticket._id);
+});
+pm.test('Référence HD-XXXX', () => pm.expect(ticket.reference).to.match(/^HD-\\d{4,}$/));
+pm.test('priorityRank = 3 (haute)', () => pm.expect(ticket.priorityRank).to.eql(3));
+pm.test('Historique « created » par le demandeur', () => {
+  pm.expect(ticket.history).to.have.lengthOf(1);
+  pm.expect(ticket.history[0].action).to.eql('created');
+  pm.expect(ticket.history[0].by._id).to.eql(pm.collectionVariables.get('userId'));
+});
 pm.collectionVariables.set('ticketId', ticket._id);`,
         }),
+      ],
+    },
+    {
+      name: '03 — Cycle de vie du ticket (US05)',
+      description: 'Utilise le ticket créé par le dossier 02.',
+      item: [
         req("L'auteur ne peut pas passer son ticket en cours → 403 (RG2)", {
           method: 'PATCH',
           path: '/tickets/{{ticketId}}/status',
