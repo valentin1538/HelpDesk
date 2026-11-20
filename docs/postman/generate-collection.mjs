@@ -71,6 +71,9 @@ const collection = {
     { key: 'adminToken', value: '' },
     { key: 'adminId', value: '' },
     { key: 'ticketId', value: '' },
+    { key: 'commentTicketId', value: '' },
+    { key: 'commentId', value: '' },
+    { key: 'internalCommentId', value: '' },
   ],
   event: [
     {
@@ -205,10 +208,54 @@ pm.test('Rôle admin', () => pm.expect(pm.response.json().user.role).to.eql('adm
       ],
     },
     {
-      name: '02 — Cycle de vie du ticket (US05)',
-      description: 'Nécessite la création de ticket (US02). Exécuter après le dossier 01.',
+      name: '02 — Déclarer un incident (US02)',
+      description:
+        'Exécuter après le dossier 01 (utilise userToken). Enregistre ticketId pour le dossier 03.',
       item: [
-        req('Créer un ticket (US02)', {
+        req('Créer un ticket — sans token → 401', {
+          method: 'POST',
+          path: '/tickets',
+          body: { title: 'Imprimante 2e étage HS', description: 'HS', category: 'hardware' },
+          tests: expectError(401, 'UNAUTHORIZED'),
+        }),
+        req('Créer un ticket — données invalides → 400', {
+          method: 'POST',
+          path: '/tickets',
+          auth: 'userToken',
+          body: { title: 'abc', description: '   ', category: 'cafe', priority: 'urgent' },
+          tests: `${expectError(400, 'VALIDATION_ERROR')}
+pm.test('Détail par champ', () => {
+  pm.expect(pm.response.json().error.details).to.have.all.keys('title', 'description', 'category', 'priority');
+});`,
+        }),
+        req('Créer un ticket — champs protégés ignorés', {
+          method: 'POST',
+          path: '/tickets',
+          auth: 'userToken',
+          body: {
+            title: 'Teams : notifications absentes',
+            description: 'Plus aucune notification sur mon poste.',
+            category: 'software',
+            status: 'closed',
+            assignedTo: '{{techId}}',
+            number: 999,
+            priorityRank: 4,
+          },
+          description:
+            'status, assignedTo, number et priorityRank sont envoyés exprès : le serveur doit les ignorer (protection contre l’assignation de masse).',
+          tests: `const { ticket } = pm.response.json();
+pm.test('201', () => pm.response.to.have.status(201));
+pm.test('Statut forcé à open, non assigné', () => {
+  pm.expect(ticket.status).to.eql('open');
+  pm.expect(ticket.assignedTo).to.eql(null);
+});
+pm.test('Numéro et rang calculés par le serveur', () => {
+  pm.expect(ticket.number).to.not.eql(999);
+  pm.expect(ticket.priority).to.eql('medium');
+  pm.expect(ticket.priorityRank).to.eql(2);
+});`,
+        }),
+        req('Créer un ticket', {
           method: 'POST',
           path: '/tickets',
           auth: 'userToken',
@@ -218,9 +265,50 @@ pm.test('Rôle admin', () => pm.expect(pm.response.json().user.role).to.eql('adm
             category: 'hardware',
             priority: 'high',
           },
-          tests: `pm.test('201 + ticket', () => pm.response.to.have.status(201));
-const { ticket } = pm.response.json();
+          tests: `const { ticket } = pm.response.json();
+pm.test('201 + en-tête Location', () => {
+  pm.response.to.have.status(201);
+  pm.expect(pm.response.headers.get('Location')).to.eql('/api/tickets/' + ticket._id);
+});
+pm.test('Référence HD-XXXX', () => pm.expect(ticket.reference).to.match(/^HD-\\d{4,}$/));
+pm.test('priorityRank = 3 (haute)', () => pm.expect(ticket.priorityRank).to.eql(3));
+pm.test('Historique « created » par le demandeur', () => {
+  pm.expect(ticket.history).to.have.lengthOf(1);
+  pm.expect(ticket.history[0].action).to.eql('created');
+  pm.expect(ticket.history[0].by._id).to.eql(pm.collectionVariables.get('userId'));
+});
 pm.collectionVariables.set('ticketId', ticket._id);`,
+        }),
+      ],
+    },
+    {
+      name: '03 — Cycle de vie du ticket (US05)',
+      description: 'Utilise le ticket créé par le dossier 02.',
+      item: [
+        req('Détail du ticket — sans token → 401', {
+          path: '/tickets/{{ticketId}}',
+          tests: expectError(401, 'UNAUTHORIZED'),
+        }),
+        req('Détail du ticket — identifiant invalide → 400', {
+          path: '/tickets/abc',
+          auth: 'userToken',
+          tests: expectError(400, 'VALIDATION_ERROR'),
+        }),
+        req('Détail du ticket (demandeur)', {
+          path: '/tickets/{{ticketId}}',
+          auth: 'userToken',
+          tests: `const { ticket, people } = pm.response.json();
+pm.test('200 + ticket + people', () => {
+  pm.response.to.have.status(200);
+  pm.expect(ticket._id).to.eql(pm.collectionVariables.get('ticketId'));
+  pm.expect(people).to.be.an('object');
+});
+pm.test('Demandeur renvoyé sans mot de passe', () => pm.expect(ticket.createdBy).to.not.have.property('password'));`,
+        }),
+        req('Détail du ticket (technicien)', {
+          path: '/tickets/{{ticketId}}',
+          auth: 'techToken',
+          tests: `pm.test('Le support voit tous les tickets (RG1) → 200', () => pm.response.to.have.status(200));`,
         }),
         req("L'auteur ne peut pas passer son ticket en cours → 403 (RG2)", {
           method: 'PATCH',
@@ -284,6 +372,125 @@ pm.test('firstResponseAt renseigné', () => pm.expect(ticket.firstResponseAt).to
           path: '/tickets/{{ticketId}}/assign',
           auth: 'adminToken',
           body: { assignedTo: '{{techId}}' },
+          tests: expectError(409, 'TICKET_CLOSED'),
+        }),
+      ],
+    },
+    {
+      name: '04 — Commentaires (US06)',
+      description:
+        'Crée son propre ticket pour le fil (celui de la US05 est fermé) : envoi, note interne masquée au demandeur (RG6) et refus sur ticket fermé (RG7).',
+      item: [
+        req('Créer un ticket pour la discussion', {
+          method: 'POST',
+          path: '/tickets',
+          auth: 'userToken',
+          body: {
+            title: 'Bac papier coincé',
+            description: 'Le papier est bloqué dans le bac 2.',
+            category: 'hardware',
+          },
+          tests: `pm.test('201', () => pm.response.to.have.status(201));
+pm.collectionVariables.set('commentTicketId', pm.response.json().ticket._id);`,
+        }),
+        req('Commentaires — sans token → 401', {
+          path: '/tickets/{{commentTicketId}}/comments',
+          tests: expectError(401, 'UNAUTHORIZED'),
+        }),
+        req('Message vide → 400', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'userToken',
+          body: { content: '   ' },
+          tests: `${expectError(400, 'VALIDATION_ERROR')}
+pm.test('Détail par champ', () => pm.expect(pm.response.json().error.details).to.have.property('content'));`,
+        }),
+        req('Ticket inexistant → 404', {
+          path: '/tickets/000000000000000000000000/comments',
+          auth: 'userToken',
+          tests: expectError(404, 'NOT_FOUND'),
+        }),
+        req('Demandeur — commenter', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'userToken',
+          body: { content: 'Le papier est coincé dans le bac 2, impossible de l’extraire.' },
+          tests: `const { comment } = pm.response.json();
+pm.test('201 + auteur + contenu', () => {
+  pm.response.to.have.status(201);
+  pm.expect(comment.author._id).to.eql(pm.collectionVariables.get('userId'));
+  pm.expect(comment.content).to.include('bac 2');
+  pm.expect(comment.isInternal).to.eql(false);
+});
+pm.test('Auteur renvoyé sans mot de passe', () => pm.expect(comment.author).to.not.have.property('password'));
+pm.collectionVariables.set('commentId', comment._id);`,
+        }),
+        req('Technicien — note interne', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'techToken',
+          body: { content: 'Intervention maintenance planifiée demain matin.', isInternal: true },
+          tests: `const { comment } = pm.response.json();
+pm.test('201, isInternal = true', () => {
+  pm.response.to.have.status(201);
+  pm.expect(comment.isInternal).to.eql(true);
+});
+pm.collectionVariables.set('internalCommentId', comment._id);`,
+        }),
+        req('Demandeur — la note interne est masquée (RG6)', {
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'userToken',
+          tests: `const { comments, pagination } = pm.response.json();
+pm.test('200 + fil chronologique', () => {
+  pm.response.to.have.status(200);
+  const dates = comments.map((c) => new Date(c.createdAt).getTime());
+  pm.expect(dates).to.eql([...dates].sort((a, b) => a - b));
+});
+pm.test('Contient le message du demandeur', () => pm.expect(comments.map((c) => c._id)).to.include(pm.collectionVariables.get('commentId')));
+pm.test('La note interne est absente (RG6)', () => {
+  pm.expect(comments.map((c) => c._id)).to.not.include(pm.collectionVariables.get('internalCommentId'));
+  pm.expect(comments.every((c) => c.isInternal === false)).to.eql(true);
+});
+pm.test('Pagination renseignée', () => {
+  pm.expect(pagination.page).to.eql(1);
+  pm.expect(pagination.total).to.be.a('number');
+  pm.expect(pagination.totalPages).to.be.a('number');
+});`,
+        }),
+        req('Technicien — voit la note interne', {
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'techToken',
+          tests: `pm.test('200 + note interne présente', () => {
+  pm.response.to.have.status(200);
+  pm.expect(pm.response.json().comments.map((c) => c._id)).to.include(pm.collectionVariables.get('internalCommentId'));
+});`,
+        }),
+        req('isInternal ignoré pour un demandeur (RG6)', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'userToken',
+          body: { content: 'Merci pour votre retour.', isInternal: true },
+          tests: `const { comment } = pm.response.json();
+pm.test('201 mais isInternal forcé à false', () => {
+  pm.response.to.have.status(201);
+  pm.expect(comment.isInternal).to.eql(false);
+});`,
+        }),
+        req('isInternal en chaîne "false" → 400', {
+          method: 'POST',
+          path: '/tickets/{{commentTicketId}}/comments',
+          auth: 'techToken',
+          body: { content: 'Message que je veux public', isInternal: 'false' },
+          description:
+            'Régression (audit Sprint 2) : la chaîne "false" était acceptée puis convertie en true → note interne involontaire. Seul un booléen JSON est accepté.',
+          tests: `${expectError(400, 'VALIDATION_ERROR')}
+pm.test('Erreur sur isInternal', () => pm.expect(pm.response.json().error.details).to.have.property('isInternal'));`,
+        }),
+        req('Ticket fermé → commentaire refusé → 409 (RG7)', {
+          method: 'POST',
+          path: '/tickets/{{ticketId}}/comments',
+          auth: 'userToken',
+          body: { content: 'Un dernier mot sur ce ticket fermé.' },
           tests: expectError(409, 'TICKET_CLOSED'),
         }),
       ],

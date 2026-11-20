@@ -36,3 +36,20 @@ export async function authenticate(req, res, next) {
   req.user = user;
   next();
 }
+
+/**
+ * Autorisation par rôle (US09). À placer APRÈS authenticate :
+ *   router.get('/stats', authenticate, requireRole('admin'), controller.stats);
+ * Le rôle vient de req.user (rechargé par authenticate) : pas de requête supplémentaire.
+ *  - pas d'utilisateur (authenticate oublié) → 401
+ *  - rôle non autorisé → 403 FORBIDDEN
+ */
+export function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user) throw AppError.unauthorized('Authentification requise');
+    if (!roles.includes(req.user.role)) {
+      throw AppError.forbidden(`Accès réservé : ${roles.join(', ')}`);
+    }
+    next();
+  };
+}

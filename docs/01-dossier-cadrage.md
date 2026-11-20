@@ -96,28 +96,28 @@ Estimation en points (1 = très simple, 8 = complexe).
 
 ### MUST — indispensable au MVP
 
-| ID   | User story                                                                                                                     | Pts | Sprint |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------ | --- | ------ |
-| US01 | En tant qu'utilisateur, je veux créer un compte et me connecter afin d'accéder à mes tickets.                                  | 5   | S2     |
-| US02 | En tant qu'utilisateur, je veux déclarer un incident (titre, description, catégorie, priorité) afin qu'il soit pris en charge. | 3   | S2     |
-| US03 | En tant qu'utilisateur, je veux voir la liste et le statut de mes tickets afin de suivre leur avancement.                      | 3   | S3     |
-| US04 | En tant que technicien, je veux voir tous les tickets filtrés et triés par priorité afin de traiter les urgences d'abord.      | 5   | S3     |
+| ID   | User story                                                                                                                     | Pts | Sprint             |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------ | --- | ------------------ |
+| US01 | En tant qu'utilisateur, je veux créer un compte et me connecter afin d'accéder à mes tickets.                                  | 5   | S2                 |
+| US02 | En tant qu'utilisateur, je veux déclarer un incident (titre, description, catégorie, priorité) afin qu'il soit pris en charge. | 3   | S2                 |
+| US03 | En tant qu'utilisateur, je veux voir la liste et le statut de mes tickets afin de suivre leur avancement.                      | 3   | S3                 |
+| US04 | En tant que technicien, je veux voir tous les tickets filtrés et triés par priorité afin de traiter les urgences d'abord.      | 5   | S3                 |
 | US05 | En tant que technicien, je veux m'assigner un ticket et changer son statut afin d'indiquer que je le traite.                   | 3   | S2 (API) / S3 (UI) |
 | US06 | En tant qu'utilisateur ou technicien, je veux échanger des commentaires dans le ticket afin de centraliser la communication.   | 3   | S2 (API) / S3 (UI) |
-| US07 | En tant qu'utilisateur, je veux voir en temps réel les nouveaux messages et changements de statut sur mon ticket.              | 5   | S4     |
-| US08 | En tant que technicien, je veux être notifié en temps réel d'un nouveau ticket afin de réagir vite.                            | 3   | S4     |
-| US09 | En tant qu'admin, je veux que les routes soient protégées par rôle afin que chacun n'accède qu'à ce qui le concerne.           | 3   | S2     |
+| US07 | En tant qu'utilisateur, je veux voir en temps réel les nouveaux messages et changements de statut sur mon ticket.              | 5   | S4                 |
+| US08 | En tant que technicien, je veux être notifié en temps réel d'un nouveau ticket afin de réagir vite.                            | 3   | S4                 |
+| US09 | En tant qu'admin, je veux que les routes soient protégées par rôle afin que chacun n'accède qu'à ce qui le concerne.           | 3   | S2                 |
 
 ### SHOULD — forte valeur, prévu
 
-| ID   | User story                                                                                                                          | Pts | Sprint |
-| ---- | ----------------------------------------------------------------------------------------------------------------------------------- | --- | ------ |
-| US10 | En tant qu'admin, je veux un tableau de bord (tickets par statut, par catégorie, délai moyen de résolution, charge par technicien). | 5   | S4     |
-| US11 | En tant qu'admin, je veux assigner un ticket à un technicien donné.                                                                 | 2   | S3     |
-| US12 | En tant que participant, je veux consulter l'historique des actions du ticket.                                                      | 2   | S3     |
-| US13 | En tant que technicien, je veux ajouter des notes internes invisibles pour l'utilisateur.                                           | 2   | S3     |
-| US14 | En tant qu'admin, je veux gérer les comptes (rôle, activation).                                                                     | 3   | S3     |
-| US15 | En tant qu'utilisateur, je veux un centre de notifications (non lues / lues).                                                       | 3   | S4     |
+| ID   | User story                                                                                                                                                                                  | Pts | Sprint |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------ |
+| US10 | En tant qu'admin, je veux un tableau de bord (tickets par statut, par catégorie, délai moyen de résolution, charge par technicien).                                                         | 5   | S4     |
+| US11 | En tant qu'admin, je veux assigner un ticket à un technicien donné.                                                                                                                         | 2   | S3     |
+| US12 | En tant que participant, je veux consulter l'historique des actions du ticket.                                                                                                              | 2   | S3     |
+| US13 | En tant que technicien, je veux ajouter des notes internes invisibles pour l'utilisateur.                                                                                                   | 2   | S3     |
+| US14 | En tant qu'admin, je veux gérer les comptes (rôle, activation).                                                                                                                             | 3   | S3     |
+| US15 | En tant qu'utilisateur, je veux un centre de notifications (non lues / lues).                                                                                                               | 3   | S4     |
 | US21 | En tant qu'utilisateur, je veux une interface claire, cohérente et agréable afin de trouver rapidement l'information et d'avoir confiance dans l'outil (identité visuelle + design system). | 5   | S2     |
 
 ### COULD — si le temps le permet
@@ -156,18 +156,19 @@ Le backlog contient aussi **15 tâches techniques** (`TECH-01` → `TECH-15`, la
 
 ## 6. Identité de la solution
 
-| | |
-|---|---|
-| **Nom** | **Opale** — service desk IT |
-| **Signature** | *Le support IT, tout en clarté.* |
-| **Logo** | Squircle au dégradé irisé (reflets d'une opale) portant un anneau « O » et un éclat — [symbole](identite/opale-symbole.svg) |
-| **Personnalité** | Calme, clair, fiable, attentionné |
+|                  |                                                                                                                             |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Nom**          | **Opale** — service desk IT                                                                                                 |
+| **Signature**    | _Le support IT, tout en clarté._                                                                                            |
+| **Logo**         | Squircle au dégradé irisé (reflets d'une opale) portant un anneau « O » et un éclat — [symbole](identite/opale-symbole.svg) |
+| **Personnalité** | Calme, clair, fiable, attentionné                                                                                           |
 
 <img src="identite/opale-symbole.svg" width="72" alt="Logo Opale" />
 
 **Pourquoi ce nom ?** L'opale est une pierre douce et lumineuse : elle incarne **la clarté** (réponse au manque de visibilité, P2) et **le calme** face à un incident informatique stressant. Le nom est court, non technique et premium, ce qui sert l'adoption par des collaborateurs non techniciens (persona Sophie).
 
-**Parti pris visuel** — *doux, luxueux, premium* :
+**Parti pris visuel** — _doux, luxueux, premium_ :
+
 - **structure inspirée de Jira**, référence des outils de ticketing : barre latérale par groupes, barre supérieure avec recherche et bouton « Créer », clés de ticket `HD-0042`, pastilles de statut, icônes de priorité ;
 - **finition inspirée d'Apple** : gris système, typographie Inter (proche de SF Pro), coins continus, barres en verre dépoli, ombres très douces, thème sombre automatique ;
 - **tendances UX actuelles** : grilles « bento », états vides qui proposent l'action suivante, micro-interactions discrètes, accessibilité (contrastes AA, focus visibles, mouvement réduit).
@@ -175,4 +176,3 @@ Le backlog contient aussi **15 tâches techniques** (`TECH-01` → `TECH-15`, la
 **Justification métier (US21)** : un outil adopté est un outil qui paraît simple et digne de confiance ; un design system commun garantit aussi la cohérence des écrans développés en parallèle par l'équipe.
 
 Détail complet (couleurs, typographie, composants, règles) : [charte graphique](05-charte-graphique.md) · guide vivant dans l'application : `/styleguide`.
-

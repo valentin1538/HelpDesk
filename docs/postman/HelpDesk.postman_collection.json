@@ -36,6 +36,18 @@
     {
       "key": "ticketId",
       "value": ""
+    },
+    {
+      "key": "commentTicketId",
+      "value": ""
+    },
+    {
+      "key": "commentId",
+      "value": ""
+    },
+    {
+      "key": "internalCommentId",
+      "value": ""
     }
   ],
   "event": [
@@ -609,11 +621,165 @@
       ]
     },
     {
-      "name": "02 — Cycle de vie du ticket (US05)",
-      "description": "Nécessite la création de ticket (US02). Exécuter après le dossier 01.",
+      "name": "02 — Déclarer un incident (US02)",
+      "description": "Exécuter après le dossier 01 (utilise userToken). Enregistre ticketId pour le dossier 03.",
       "item": [
         {
-          "name": "Créer un ticket (US02)",
+          "name": "Créer un ticket — sans token → 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Imprimante 2e étage HS\",\n  \"description\": \"HS\",\n  \"category\": \"hardware\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 UNAUTHORIZED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un ticket — données invalides → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"abc\",\n  \"description\": \"   \",\n  \"category\": \"cafe\",\n  \"priority\": \"urgent\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Détail par champ', () => {",
+                  "  pm.expect(pm.response.json().error.details).to.have.all.keys('title', 'description', 'category', 'priority');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un ticket — champs protégés ignorés",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Teams : notifications absentes\",\n  \"description\": \"Plus aucune notification sur mon poste.\",\n  \"category\": \"software\",\n  \"status\": \"closed\",\n  \"assignedTo\": \"{{techId}}\",\n  \"number\": 999,\n  \"priorityRank\": 4\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "status, assignedTo, number et priorityRank sont envoyés exprès : le serveur doit les ignorer (protection contre l’assignation de masse)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { ticket } = pm.response.json();",
+                  "pm.test('201', () => pm.response.to.have.status(201));",
+                  "pm.test('Statut forcé à open, non assigné', () => {",
+                  "  pm.expect(ticket.status).to.eql('open');",
+                  "  pm.expect(ticket.assignedTo).to.eql(null);",
+                  "});",
+                  "pm.test('Numéro et rang calculés par le serveur', () => {",
+                  "  pm.expect(ticket.number).to.not.eql(999);",
+                  "  pm.expect(ticket.priority).to.eql('medium');",
+                  "  pm.expect(ticket.priorityRank).to.eql(2);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Créer un ticket",
           "request": {
             "method": "POST",
             "header": [
@@ -653,9 +819,162 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('201 + ticket', () => pm.response.to.have.status(201));",
                   "const { ticket } = pm.response.json();",
+                  "pm.test('201 + en-tête Location', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(pm.response.headers.get('Location')).to.eql('/api/tickets/' + ticket._id);",
+                  "});",
+                  "pm.test('Référence HD-XXXX', () => pm.expect(ticket.reference).to.match(/^HD-\\d{4,}$/));",
+                  "pm.test('priorityRank = 3 (haute)', () => pm.expect(ticket.priorityRank).to.eql(3));",
+                  "pm.test('Historique « created » par le demandeur', () => {",
+                  "  pm.expect(ticket.history).to.have.lengthOf(1);",
+                  "  pm.expect(ticket.history[0].action).to.eql('created');",
+                  "  pm.expect(ticket.history[0].by._id).to.eql(pm.collectionVariables.get('userId'));",
+                  "});",
                   "pm.collectionVariables.set('ticketId', ticket._id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 — Cycle de vie du ticket (US05)",
+      "description": "Utilise le ticket créé par le dossier 02.",
+      "item": [
+        {
+          "name": "Détail du ticket — sans token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 UNAUTHORIZED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Détail du ticket — identifiant invalide → 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/abc",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "abc"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Détail du ticket (demandeur)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { ticket, people } = pm.response.json();",
+                  "pm.test('200 + ticket + people', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(ticket._id).to.eql(pm.collectionVariables.get('ticketId'));",
+                  "  pm.expect(people).to.be.an('object');",
+                  "});",
+                  "pm.test('Demandeur renvoyé sans mot de passe', () => pm.expect(ticket.createdBy).to.not.have.property('password'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Détail du ticket (technicien)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{techToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Le support voit tous les tickets (RG1) → 200', () => pm.response.to.have.status(200));"
                 ]
               }
             }
@@ -995,6 +1314,520 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"assignedTo\": \"{{techId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 TICKET_CLOSED', () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('TICKET_CLOSED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 — Commentaires (US06)",
+      "description": "Crée son propre ticket pour le fil (celui de la US05 est fermé) : envoi, note interne masquée au demandeur (RG6) et refus sur ticket fermé (RG7).",
+      "item": [
+        {
+          "name": "Créer un ticket pour la discussion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Bac papier coincé\",\n  \"description\": \"Le papier est bloqué dans le bac 2.\",\n  \"category\": \"hardware\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201));",
+                  "pm.collectionVariables.set('commentTicketId', pm.response.json().ticket._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Commentaires — sans token → 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401 UNAUTHORIZED', () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('UNAUTHORIZED');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Message vide → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"   \"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Détail par champ', () => pm.expect(pm.response.json().error.details).to.have.property('content'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ticket inexistant → 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/000000000000000000000000/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "000000000000000000000000", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 NOT_FOUND', () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('NOT_FOUND');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Demandeur — commenter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Le papier est coincé dans le bac 2, impossible de l’extraire.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { comment } = pm.response.json();",
+                  "pm.test('201 + auteur + contenu', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(comment.author._id).to.eql(pm.collectionVariables.get('userId'));",
+                  "  pm.expect(comment.content).to.include('bac 2');",
+                  "  pm.expect(comment.isInternal).to.eql(false);",
+                  "});",
+                  "pm.test('Auteur renvoyé sans mot de passe', () => pm.expect(comment.author).to.not.have.property('password'));",
+                  "pm.collectionVariables.set('commentId', comment._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Technicien — note interne",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{techToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Intervention maintenance planifiée demain matin.\",\n  \"isInternal\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { comment } = pm.response.json();",
+                  "pm.test('201, isInternal = true', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(comment.isInternal).to.eql(true);",
+                  "});",
+                  "pm.collectionVariables.set('internalCommentId', comment._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Demandeur — la note interne est masquée (RG6)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { comments, pagination } = pm.response.json();",
+                  "pm.test('200 + fil chronologique', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const dates = comments.map((c) => new Date(c.createdAt).getTime());",
+                  "  pm.expect(dates).to.eql([...dates].sort((a, b) => a - b));",
+                  "});",
+                  "pm.test('Contient le message du demandeur', () => pm.expect(comments.map((c) => c._id)).to.include(pm.collectionVariables.get('commentId')));",
+                  "pm.test('La note interne est absente (RG6)', () => {",
+                  "  pm.expect(comments.map((c) => c._id)).to.not.include(pm.collectionVariables.get('internalCommentId'));",
+                  "  pm.expect(comments.every((c) => c.isInternal === false)).to.eql(true);",
+                  "});",
+                  "pm.test('Pagination renseignée', () => {",
+                  "  pm.expect(pagination.page).to.eql(1);",
+                  "  pm.expect(pagination.total).to.be.a('number');",
+                  "  pm.expect(pagination.totalPages).to.be.a('number');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Technicien — voit la note interne",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{techToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 + note interne présente', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  pm.expect(pm.response.json().comments.map((c) => c._id)).to.include(pm.collectionVariables.get('internalCommentId'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "isInternal ignoré pour un demandeur (RG6)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Merci pour votre retour.\",\n  \"isInternal\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const { comment } = pm.response.json();",
+                  "pm.test('201 mais isInternal forcé à false', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  pm.expect(comment.isInternal).to.eql(false);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "isInternal en chaîne \"false\" → 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{commentTicketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{commentTicketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{techToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Message que je veux public\",\n  \"isInternal\": \"false\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Régression (audit Sprint 2) : la chaîne \"false\" était acceptée puis convertie en true → note interne involontaire. Seul un booléen JSON est accepté."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 VALIDATION_ERROR', () => {",
+                  "  pm.response.to.have.status(400);",
+                  "  pm.expect(pm.response.json().error.code).to.eql('VALIDATION_ERROR');",
+                  "});",
+                  "pm.test('Erreur sur isInternal', () => pm.expect(pm.response.json().error.details).to.have.property('isInternal'));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ticket fermé → commentaire refusé → 409 (RG7)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tickets/{{ticketId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["tickets", "{{ticketId}}", "comments"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{userToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Un dernier mot sur ce ticket fermé.\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

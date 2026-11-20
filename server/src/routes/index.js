@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { isDbConnected } from '../config/db.js';
 import authRoutes from './authRoutes.js';
+import commentRoutes from './commentRoutes.js';
+import ticketRoutes from './ticketRoutes.js';
 import ticketWorkflowRoutes from './ticketWorkflowRoutes.js';
 
 const router = Router();
@@ -13,9 +15,9 @@ router.get('/health', (req, res) => {
 
 // Montage des routes métier — UNE ligne par US pour limiter les conflits Git :
 router.use('/auth', authRoutes); // US01
-// router.use('/tickets', ticketRoutes);         // US02, US04
+router.use('/tickets', ticketRoutes); // US02 (POST /), US03 / US04 (GET) à venir
 router.use('/tickets', ticketWorkflowRoutes); // US05 (PATCH /:id/status, /:id/assign)
-// router.use('/tickets/:id/comments', commentRoutes); // US06
+router.use('/tickets/:id/comments', commentRoutes); // US06 (GET /, POST /)
 // router.use('/users', userRoutes);             // US14
 // router.use('/notifications', notificationRoutes); // US15
 // router.use('/stats', statsRoutes);            // US10
