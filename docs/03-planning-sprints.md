@@ -164,14 +164,46 @@ Si le sprint déborde : US06 puis TECH-13 glissent au Sprint 3 ; authentificatio
 
 ## Sprint 3 — Parcours complets
 
-**Objectif :** parcours utilisateur, technicien et admin complets dans le navigateur.
+**Objectif :** chaque rôle a son parcours complet dans le navigateur — le collaborateur suit **ses** tickets, le support travaille depuis **une file triée par urgence**, l'administrateur **assigne** et **gère les comptes** — et chaque PR est vérifiée automatiquement.
 
-| Valentin — `server/`                                       | Edoardo — `client/`                                                                   |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| US04 filtres / tri / pagination sur `GET /tickets`         | US03 Mes tickets, US04 file technicien avec filtres                                   |
-| US11 assignation admin, US13 notes internes (filtrage RG6) | Page Détail ticket : fil de commentaires (US06), US13 notes internes, US12 historique |
-| US14 routes `GET/PATCH /users`                             | US11 sélecteur d'assignation, US14 page gestion des utilisateurs                      |
-| Mise à jour de la doc API                                  | Actions de statut dans le détail (US05)                                               |
+### Backlog du sprint (colonne Ready du Kanban)
+
+| Élément                              | Responsable | Pts | Contenu                                                                                                                                                                                                       |
+| ------------------------------------ | ----------- | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **US04** — File du support           | Valentin    | 5   | `GET /api/tickets` (vue support) : filtres statut / priorité / catégorie / assigné, tri par urgence puis ancienneté, pagination ; page « File du support » (compteurs, « Prendre en charge » depuis la liste) |
+| **US03** — Mes tickets               | Valentin    | 3   | Même route `GET /api/tickets`, vue collaborateur (RG1) ; page « Mes tickets » avec onglets de statut                                                                                                          |
+| **US11** — Assignation par l'admin   | Valentin    | 2   | `GET /api/staff` (membres actifs du support) + sélecteur d'assignation dans le panneau Gestion ; notification `ticket_assigned` enregistrée                                                                   |
+| **US12** — Historique (finalisation) | Valentin    | 2   | `PATCH /api/tickets/:id/priority` (support) + sélecteur de priorité dans le panneau Gestion ; entrée `priority_changed` lisible dans la frise _(frise, statut et assignation déjà livrés au Sprint 2)_        |
+| **US14** — Gestion des utilisateurs  | **Edoardo** | 3   | `GET` / `PATCH /api/users` (admin, `requireRole`), garde-fous (pas d'auto-désactivation), page « Utilisateurs »                                                                                               |
+| **TECH-17** — Intégration continue   | **Edoardo** | 2   | GitHub Actions sur chaque PR : formatage, lint, build, seed + collection Postman                                                                                                                              |
+| **TECH-18** — Rapport IA du Sprint 3 | Valentin    | 1   | Prompts clés et analyse critique                                                                                                                                                                              |
+| ~~US13~~ — Notes internes            | —           | —   | ✅ déjà livrée avec US06 (PR #50, #52) : fermée                                                                                                                                                               |
+
+**Charge :** Valentin 13 pts · Edoardo 5 pts — total 18 pts (vélocité du Sprint 2 : 41 pts sur deux jours, dont une partie du socle).
+
+### Pourquoi cette répartition
+
+Valentin prend le **chemin critique** : US03 et US04 partagent la même route `GET /api/tickets`, et US11 / US12 modifient tous deux le panneau « Gestion » de la page détail. Les confier à une même personne évite les conflits et les attentes.
+
+Edoardo prend deux éléments **non bloquants**, sur lesquels personne n'attend et qui ne touchent pas les fichiers de Valentin :
+
+| Élément d'Edoardo | Fichiers propres                                                                                                                                                | Points de contact (une ligne chacun)                                                                                                          | Dépendances                                                     |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| US14              | `server/src/routes/userRoutes.js`, `services/userService.js`, `controllers/userController.js`, `client/src/pages/AdminUsersPage.jsx`, `client/src/api/users.js` | `routes/index.js` (ligne US14 déjà prévue), `App.jsx` (une route sous la garde admin), `constants/navigation.js` (un lien `roles: ['admin']`) | aucune : réutilise `requireRole` (son US09) et le design system |
+| TECH-17           | `.github/workflows/ci.yml`                                                                                                                                      | README (badge)                                                                                                                                | aucune                                                          |
+
+**Contrat pour éviter tout chevauchement :** US11 n'utilise **pas** la route d'US14. La liste des assignables vient de `GET /api/staff` (route propre à US11, accessible au support), tandis que `GET /api/users` (US14) reste réservée à l'administrateur pour la gestion des comptes. Les deux US avancent donc en parallèle sans s'attendre.
+
+### Ordre de réalisation
+
+| Étape | Valentin                                                  | Edoardo                                         |
+| ----- | --------------------------------------------------------- | ----------------------------------------------- |
+| 1     | US04 + US03 (route de liste commune, puis les deux pages) | US14 — API (`GET` / `PATCH /api/users`) + tests |
+| 2     | US11 (`GET /api/staff`, sélecteur d'assignation)          | US14 — page « Utilisateurs »                    |
+| 3     | US12 (changement de priorité)                             | TECH-17 — CI GitHub Actions                     |
+| 4     | TECH-18 — rapport IA, audit de fin de sprint              | Relecture des PR de Valentin                    |
+
+**Rappels (rétrospective du Sprint 2)** : une PR par élément, **vers `develop`**, poussée avant d'annoncer la tâche terminée ; `npm run format` (configuration du projet) avant chaque commit ; mise à jour de la collection Postman avec chaque route ; vérification dans le navigateur pour chaque rôle concerné. Fin de sprint : audit puis version `develop` → `main` (merge commit).
 
 ## Sprint 4 — Temps réel & statistiques
 
